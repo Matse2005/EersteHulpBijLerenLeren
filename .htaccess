@@ -1,0 +1,21 @@
+RewriteEngine On
+RewriteRule ^artikels$ pages/articles/articles.php
+RewriteRule ^artikel/([0-9]+)$ pages/articles/article.php?slug=$1
+
+RewriteRule ^login$ pages/auth/signin.php
+RewriteRule ^loguit$ pages/auth/signout.php
+
+RewriteRule ^hulp$ pages/dashboard/results/index.php
+RewriteRule ^hulp/([0-9]+)$ pages/dashboard/results/categories.php?id=$1
+
+RewriteRule ^tips$ pages/tips/tips.php
+
+RewriteRule ^formulier$ pages/formulier.php
+
+RewriteRule ^dashboard$ pages/dashboard/index.php
+
+RewriteRule ^$ pages/index.php
+
+<Files "data.db">
+    require all denied
+</Files>

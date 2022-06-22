@@ -1,0 +1,100 @@
+[
+  {
+    "id": 0,
+    "name": "Op boeken",
+    "description": "Jasmine, het personage zit neer op 3 boeken en leest terwijl een boek",
+    "voorbeeld": "Wanneer de website laat om je welkom te heten.",
+    "image": "header.svg"
+  },
+  {
+    "id": 1,
+    "name": "Statistieken",
+    "description": "Jasmine, het personage heeft een ipad vast en vergelijkt de statistieken.",
+    "voorbeeld": "Dit zou je kunnen gebruiken om naar het formulier te gaan dat je laat zien welke tips voor jou zouden werken.",
+    "image": "welketips.svg"
+  },
+  {
+    "id": 2,
+    "name": "Vragen",
+    "description": "Jasmine, laat zien dat ze vragen heeft door dat er allemaal vraagtekens staan rond haar hoofd.",
+    "voorbeeld": "Dit zou je kunnen gebruiken bij tips die te maken hebben met vragen stellen of begrijpen.",
+    "image": "questions.svg"
+  },
+  {
+    "id": 3,
+    "name": "Ontspanning",
+    "description": "Jasmine zit in de zetel samen met haar gsm in de hand en een hoofdtelefoon op het hoofd, ze heeft in haar andere hand een meeneem koffie vast.",
+    "voorbeeld": "Deze pose zou je kunnen gebruiken om voor te stellen dat ze niet aan het leren is omdat ze al klaar is of omdat ze geen zin heeft.",
+    "image": "bored.svg"
+  },
+  {
+    "id": 4,
+    "name": "Verdrietig",
+    "description": "Jasmine zit met haar armen om haar knieën en haar knieën zijn naar haar toe getrokken.",
+    "voorbeeld": "Dit zou je kunnen gebruiken in gevallen dat het gaat over verdrietig zijn en niet goed voelen.",
+    "image": "nietgoed.svg"
+  },
+  {
+    "id": 5,
+    "name": "Geen idee",
+    "description": "Jasmine staat in een houden met haar armen naast haar en gebogen en ze doet het teken: ik heb geen idee.",
+    "voorbeeld": "Gebruik deze pose wanneer het gaat over tips die te maken hebben met dingen niet weten wat normaal zou moeten.",
+    "image": "nietsoppikken.svg"
+  },
+  {
+    "id": 6,
+    "name": "Geen zin",
+    "description": "Jasmine doet het teken van HALT!",
+    "voorbeeld": "Het is een pose die je voor meerdere manieren kan gebruiken zoals dat je studeert maar het je niet opbrenngt omdat je brein nee zegt.",
+    "image": "nietsopbrengen.svg"
+  },
+  {
+    "id": 7,
+    "name": "Snappen",
+    "description": "Jamsine zit voorover gebogen op en denkt na over wat ze ziet.",
+    "voorbeeld": "Deze pose zal gebruikt kunnen worden in gevallen van het niet begrijpen of het moeilijk vinden va bepaalde dingen/leerstof.",
+    "image": "wattedoen.svg"
+  },
+  {
+    "id": 8,
+    "name": "Leeg",
+    "description": "Een pose met een leeg wit blad/doek.",
+    "voorbeeld": "Gebruik deze pose als het gaat om een tip die te maken heeft met niets meer weten/een blackout.",
+    "image": "blackout.svg"
+  },
+  {
+    "id": 9,
+    "name": "Super Jasmine",
+    "description": "Jasmine die kan vliegen met een cape aan",
+    "voorbeeld": "Gebruik het wanneer het gaat over iets waar dat je altijd met iets/iemand anders bezig bent dan met jezelf, andere of school",
+    "image": "uitstel.svg"
+  },
+  {
+    "id": 10,
+    "name": "Tijd",
+    "description": "Jasmine kijkt op haar horloge",
+    "voorbeeld": "Is het een tip die te maken heeft met het rond komen van je planning of tijdig je examen of toets afmaken, dan is deze pose daar goed voor.",
+    "image": "tijd.svg"
+  },
+  {
+    "id": 11,
+    "name": "Denken",
+    "description": "Jasmine heeft een denk ballon met 'tekst' rond haar hoofd.",
+    "voorbeeld": "Gebruik deze pose al het gaat over het kunnen, en begrijpen van leerstof en/of gehele vakken.",
+    "image": "think.svg"
+  },
+  {
+    "id": 12,
+    "name": "Schrijven",
+    "description": "Jasmine heeft een groot potlood vast dat ervoor zorgt dat ze kan schrijven.",
+    "voorbeeld": "Dit is een goed pose als het ten dienste staat voor tips die gaan over werkwijze van het berekeningen die bij bepaalde vakken gemaakt moeten worden.",
+    "image": "pencil.svg"
+  },
+  {
+    "id": 13,
+    "name": "Productiviteit",
+    "description": "Jasmine heeft grote tandwielen in hara handen.",
+    "voorbeeld": "Dit is een goed voorbeeld als het gaat over de productiviteit en het werkn voor school.",
+    "image": "snelbeu.svg"
+  }
+]
