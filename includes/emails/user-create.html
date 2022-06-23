@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account aangemaakt</title>
+</head>
+
+<body>
+  <div class="app font-sans min-w-screen min-h-screen bg-grey-lighter py-8 px-4">
+
+    <div class="mail__wrapper max-w-md mx-auto">
+
+      <div class="mail__content bg-white p-8 shadow-md">
+
+        <div
+          class="content__header h-64 flex flex-col items-center justify-center text-center tracking-wide leading-normal bg-black -mx-8 -mt-8">
+          <h1 class="text-red text-5xl">Account aangemaakt</h1>
+        </div>
+
+        <div class="content__body py-8 border-b">
+          <p>
+            Beste {firstname}!<br><br>
+            Jou account op {name} is aangemaakt met de volgende gegevens:<br><br>
+            <strong>Voornaam: </strong> {firstname}<br>
+            <strong>Achternaam: </strong> {lastname}<br>
+            <strong>E-mailadres:</strong> {email}<br>
+            <strong>Wachtwoord:</strong> {password}<br><br>
+          </p>
+          <a href="{login_url}" class="text-white text-sm tracking-wide bg-red rounded w-full my-8 p-4 ">Klik hier om in
+            te loggen en je
+            wachtwoord aan te passen</a>
+          <p class="text-sm">
+            Veel succes!<br>
+            {name}
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</body>
+
+</html>

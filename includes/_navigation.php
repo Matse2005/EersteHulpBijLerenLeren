@@ -24,6 +24,9 @@
     <li class="growing-underline mx-3">
       <a href="/hulp">Mijn Hulp</a>
     </li>
+    <li class="growing-underline mx-3">
+      <a href="/profiel"><?php print $_SESSION["user"]["firstname"] ?> <?php print $_SESSION["user"]["lastname"] ?></a>
+    </li>
   </ul>
   <div class="font-source-code-pro hidden md:block">
     <a href="/loguit" class="py-2 px-4 text-white bg-black rounded-3xl">
@@ -50,6 +53,9 @@
     </li>
     <li class="my-6">
       <a href="/hulp">Mijn Hulp</a>
+    </li>
+    <li class="my-6">
+      <a href="/profiel"><?php print $_SESSION["user"]["firstname"] ?> <?php print $_SESSION["user"]["lastname"] ?></a>
     </li>
     <li class="my-6">
       <a href="/loguit" class="py-2 px-4 text-white bg-black rounded-3xl">Log uit</a>

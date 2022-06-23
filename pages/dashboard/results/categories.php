@@ -19,7 +19,7 @@ if (!$result) {
   <div class="overflow-hidden">
     <div class="max-w-8xl mx-auto">
       <div class="flex px-4 pt-8 pb-10 lg:px-8">
-        <a class="group flex font-semibold text-sm leading-6" href="/blog">
+        <a class="group flex font-semibold text-sm leading-6" href="/hulp">
           <svg viewBox="0 -9 3 24" class="overflow-visible mr-3 w-auto h-6">
             <path d="M3 0L0 3L3 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>

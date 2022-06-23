@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+//Load Composer's autoloader
+include_once $_SERVER["DOCUMENT_ROOT"] . "/vendor/autoload.php";
+
 function location($url)
 {
   // if (str_starts_with(strtolower($_SERVER['HTTP_HOST']), "localhost")) {
@@ -64,19 +71,19 @@ function getUser($db, $email = "null")
   return false;
 }
 
-function emails($db)
-{
-  $stmt = $db->prepare("SELECT * FROM users");
-  $stmt->execute();
-  $users = $stmt->fetchAll();
+// function emails($db)
+// {
+//   $stmt = $db->prepare("SELECT * FROM users");
+//   $stmt->execute();
+//   $users = $stmt->fetchAll();
 
-  $emails = array();
-  foreach ($users as $user) {
-    $emails[] = $user["email"];
-  }
+//   $emails = array();
+//   foreach ($users as $user) {
+//     $emails[] = $user["email"];
+//   }
 
-  return json_encode($emails);
-}
+//   return json_encode($emails);
+// }
 
 function login($db, $email, $password)
 {
@@ -102,6 +109,26 @@ function login($db, $email, $password)
   } else {
     return array("error" => "Gebruiker kon niet gevonden worden", "status" => "404");
   }
+}
+
+function randomString($length = 25)
+{
+  $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=[]{}|;:<>,.?/';
+  $charactersLength = strlen($characters);
+  $randomString = '';
+  for ($i = 0; $i < $length; $i++) {
+    $randomString .= $characters[rand(0, $charactersLength - 1)];
+  }
+  return $randomString;
+}
+
+function encrypt($password)
+{
+  $salt = randomString();
+  return array(
+    "salt" => $salt,
+    "password" => hash("sha256", $password . $salt),
+  );
 }
 
 function checkAdmin($db, $id)
@@ -509,4 +536,169 @@ function stats($db)
 
   // Return the array
   return $arr;
+}
+
+function users($db)
+{
+  $stmt = $db->prepare("SELECT * FROM users");
+  $stmt->execute();
+  $arr = $stmt->fetchAll();
+  $returnArr = array();
+  foreach ($arr as $user) {
+    $returnArr[$user["id"]] = array(
+      "id" => $user["id"],
+      "firstname" => $user["firstname"],
+      "lastname" => $user["lastname"],
+      "email" => $user["email"]
+    );
+  }
+
+  return $arr;
+}
+
+function emails($db)
+{
+  $emails = array();
+  foreach (users($db) as $user)
+    $emails[] = $user["email"];
+
+  return $emails;
+}
+
+function userCreate($db, $firstname, $lastname, $email, $password)
+{
+  $hashed = encrypt($password);
+
+  $stmt = $db->prepare("INSERT INTO users (firstname, lastname, email, password, salt, status) VALUES (:firstname, :lastname, :email, :password, :salt, 'unchanged')");
+  $stmt->bindParam(":firstname", $firstname);
+  $stmt->bindParam(":lastname", $lastname);
+  $stmt->bindParam(":email", $email);
+  $stmt->bindParam(":password", $hashed["password"]);
+  $stmt->bindParam(":salt", $hashed["salt"]);
+  $stmt->execute();
+
+  //Create an instance; passing `true` enables exceptions
+  $mail = new PHPMailer(true);
+
+  try {
+    include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
+
+    //Server settings
+    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+    $mail->isSMTP();
+    $mail->SMTPDebug = 0;
+    $mail->CharSet = "utf-8";                                      //Send using SMTP
+    $mail->Host       = "mail.m-vh.eu";                     //Set the SMTP server to send through
+    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+    $mail->Username   = "noreply@m-vh.eu";                     //SMTP username
+    $mail->Password   = "Neeltje123";                               //SMTP password
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
+    $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+    //Recipients
+    $mail->setFrom("noreply@m-vh.eu", settings($db)["name"]);
+    $mail->addAddress($email, $firstname . " " . $lastname);     //Add a recipient
+
+    //Content
+    $mail->isHTML(true);                                  //Set email format to HTML
+    $mail->Subject = "Jou account voor " . settings($db)["name"] . " is aangemaakt";
+    // Include HTML files as $mail->Body 
+    $template = file_get_contents($_SERVER["DOCUMENT_ROOT"] . "/includes/emails/user-create.html");
+    $template = str_replace("{firstname}", $firstname, $template);
+    $template = str_replace("{lastname}", $lastname, $template);
+    $template = str_replace("{email}", $email, $template);
+    $template = str_replace("{password}", $password, $template);
+    $template = str_replace("{login_url}", "https://" . $_SERVER["HTTP_HOST"] . "/login", $template);
+    $template = str_replace("{name}", settings($db)["name"], $template);
+    $template = str_replace("{url}", $_SERVER["HTTP_HOST"], $template);
+    $mail->Body = $template;
+    $mail->AltBody = "Er is een account aangemaakt voor " . $_SERVER["HTTP_HOST"] . " met de volgende gegevens: Voornaam: " . $firstname . ", Achternaam: " . $lastname . ", Email: " . $email . ", Wachtwoord: " . $password . "Verander dit wachtwoord nadat je bent ingelogd.";
+
+    $mail->send();
+  } catch (Exception $e) {
+    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+  }
+}
+
+function userRemove($db, $id)
+{
+  $stmt = $db->prepare("DELETE FROM users WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+
+  adminRemove($db, $id);
+}
+
+function admins($db)
+{
+  $admins = array();
+  $stmt = $db->prepare("SELECT * FROM admins");
+  $stmt->execute();
+  $arr = $stmt->fetchAll();
+  foreach ($arr as $admin) {
+    $admins[] = array(
+      "id" => user($db, $admin["user_id"])["id"],
+      "firstname" => user($db, $admin["user_id"])["firstname"],
+      "lastname" => user($db, $admin["user_id"])["lastname"],
+      "email" => user($db, $admin["user_id"])["email"]
+    );
+  }
+
+  return $admins;
+}
+
+function adminRemove($db, $id)
+{
+  $stmt = $db->prepare("DELETE FROM admins WHERE user_id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+}
+
+function adminCreate($db, $id)
+{
+  $stmt = $db->prepare("INSERT INTO admins (user_id) VALUES (:id)");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+
+  $user = user($db, $id);
+
+  //Create an instance; passing `true` enables exceptions
+  $mail = new PHPMailer(true);
+
+  try {
+    include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
+
+    //Server settings
+    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+    $mail->isSMTP();
+    $mail->SMTPDebug = 0;
+    $mail->CharSet = "utf-8";                                      //Send using SMTP
+    $mail->Host       = "mail.m-vh.eu";                     //Set the SMTP server to send through
+    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+    $mail->Username   = "noreply@m-vh.eu";                     //SMTP username
+    $mail->Password   = "Neeltje123";                               //SMTP password
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
+    $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+    //Recipients
+    $mail->setFrom("noreply@m-vh.eu", settings($db)["name"]);
+    $mail->addAddress($user["email"], $user["firstname"] . " " . $user["lastname"]);     //Add a recipient
+
+    //Content
+    $mail->isHTML(true);                                  //Set email format to HTML
+    $mail->Subject = "Jou account op " . settings($db)["name"] . " is nu een beheerders account";
+    // Include HTML files as $mail->Body 
+    $template = file_get_contents($_SERVER["DOCUMENT_ROOT"] . "/includes/emails/admin.html");
+    $template = str_replace("{firstname}", $user["firstname"], $template);
+    $template = str_replace("{lastname}", $user["lastname"], $template);
+    $template = str_replace("{email}", $user["email"], $template);
+    $template = str_replace("{name}", settings($db)["name"], $template);
+    $template = str_replace("{url}", $_SERVER["HTTP_HOST"], $template);
+    $mail->Body = $template;
+    $mail->AltBody = "Jou account op " . settings($db)["name"] . " is nu een beheerders account, dat wilt zeggen dat jij nu de rechten hebt om de website te beheren.";
+
+    $mail->send();
+  } catch (Exception $e) {
+    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+  }
 }

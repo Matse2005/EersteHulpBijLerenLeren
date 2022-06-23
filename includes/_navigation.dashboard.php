@@ -225,6 +225,11 @@
           <span class="ml-4">Mijn Hulp</span>
         </a>
       </li>
+      <li class="relative px-6 py-3">
+        <a class="inline-flex items-center w-full text-sm font-source-code-pro" href="/profiel">
+          <span class="ml-4"><?php print $_SESSION["user"]["firstname"] ?> <?php print $_SESSION["user"]["lastname"] ?></span>
+        </a>
+      </li>
     </ul>
     <div class="px-6 my-6">
       <a href="/loguit" class="items-center font-source-code-pro py-2 px-4 text-white bg-black rounded-3xl">
@@ -261,6 +266,11 @@
           <li class="mx-3">
             <a class="text-black growing-underline" href="/hulp">
               Mijn Hulp
+            </a>
+          </li>
+          <li class="mx-3">
+            <a class="text-black growing-underline" href="/profiel">
+              <?php print $_SESSION["user"]["firstname"] ?> <?php print $_SESSION["user"]["lastname"] ?>
             </a>
           </li>
         </ul>

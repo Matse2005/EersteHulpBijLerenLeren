@@ -73,7 +73,7 @@ if (isset($_POST["submit"])) {
 
 <script>
   function validate() {
-    var emails = <?php print emails($db) ?>;
+    var emails = <?php print json_encode(emails($db)) ?>;
     var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
     var email = document.getElementById("email").value;
