@@ -67,6 +67,62 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/includes/_header.dashboard.php';
             </p>
           </div>
         </div>
+        <!-- Card -->
+        <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+          <div class="p-3 mr-4 text-yellow-500 bg-yellow-100 rounded-full dark:text-yellow-100 dark:bg-yellow-500">
+            <i class="fa-regular fa-users text-3xl"></i>
+          </div>
+          <div>
+            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+              Gebruikers
+            </p>
+            <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
+              <?php print stats($db)["users"]; ?>
+            </p>
+          </div>
+        </div>
+        <!-- Card -->
+        <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+          <div class="p-3 mr-4 text-purple-500 bg-purple-100 rounded-full dark:text-purple-100 dark:bg-purple-500">
+            <i class="fa-regular fa-chart-bar text-3xl"></i>
+          </div>
+          <div>
+            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+              Bronnen
+            </p>
+            <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
+              <?php print stats($db)["bronnen"]; ?>
+            </p>
+          </div>
+        </div>
+        <!-- Card -->
+        <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+          <div class="p-3 mr-4 text-yellow-500 bg-yellow-100 rounded-full dark:text-yellow-100 dark:bg-yellow-500">
+            <i class="fa-regular fa-browsers text-3xl"></i>
+          </div>
+          <div>
+            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+              Websites
+            </p>
+            <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
+              <?php print stats($db)["websites"]; ?>
+            </p>
+          </div>
+        </div>
+        <!-- Card -->
+        <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+          <div class="p-3 mr-4 text-yellow-500 bg-yellow-100 rounded-full dark:text-yellow-100 dark:bg-yellow-500">
+            <i class="fa-regular fa-memo-circle-info text-3xl"></i>
+          </div>
+          <div>
+            <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+              Credits
+            </p>
+            <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
+              <?php print stats($db)["credits"]; ?>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
     <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/includes/_footer.dashboard.php'; ?>

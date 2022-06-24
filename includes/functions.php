@@ -30,7 +30,7 @@ function location($url)
 
 function database_connect()
 {
-  include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
+  include $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
 
   try {
     $db = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
@@ -534,6 +534,26 @@ function stats($db)
   $stmt->execute();
   $arr["tips"] = $stmt->fetchColumn();
 
+  // Count all users
+  $stmt = $db->prepare("SELECT COUNT(*) FROM users");
+  $stmt->execute();
+  $arr["users"] = $stmt->fetchColumn();
+
+  // Count all bronnen
+  $stmt = $db->prepare("SELECT COUNT(*) FROM bronnen");
+  $stmt->execute();
+  $arr["bronnen"] = $stmt->fetchColumn();
+
+  // Count all websites
+  $stmt = $db->prepare("SELECT COUNT(*) FROM websites");
+  $stmt->execute();
+  $arr["websites"] = $stmt->fetchColumn();
+
+  // Count all credits
+  $stmt = $db->prepare("SELECT COUNT(*) FROM credits");
+  $stmt->execute();
+  $arr["credits"] = $stmt->fetchColumn();
+
   // Return the array
   return $arr;
 }
@@ -581,19 +601,18 @@ function userCreate($db, $firstname, $lastname, $email, $password)
   $mail = new PHPMailer(true);
 
   try {
-    include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
+    include $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
 
-    //Server settings
     $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
     $mail->isSMTP();
     $mail->SMTPDebug = 0;
     $mail->CharSet = "utf-8";                                      //Send using SMTP
-    $mail->Host       = "mail.m-vh.eu";                     //Set the SMTP server to send through
+    $mail->Host       = $smtp_host;                     //Set the SMTP server to send through
     $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-    $mail->Username   = "noreply@m-vh.eu";                     //SMTP username
-    $mail->Password   = "Neeltje123";                               //SMTP password
+    $mail->Username   = $smtp_user;                     //SMTP username
+    $mail->Password   = $smtp_pass;                               //SMTP password
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
-    $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+    $mail->Port       = 587;                                //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
     //Recipients
     $mail->setFrom("noreply@m-vh.eu", settings($db)["name"]);
@@ -666,17 +685,17 @@ function adminCreate($db, $id)
   $mail = new PHPMailer(true);
 
   try {
-    include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
+    include $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
 
     //Server settings
     $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
     $mail->isSMTP();
     $mail->SMTPDebug = 0;
     $mail->CharSet = "utf-8";                                      //Send using SMTP
-    $mail->Host       = "mail.m-vh.eu";                     //Set the SMTP server to send through
+    $mail->Host       = $smtp_host;                     //Set the SMTP server to send through
     $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-    $mail->Username   = "noreply@m-vh.eu";                     //SMTP username
-    $mail->Password   = "Neeltje123";                               //SMTP password
+    $mail->Username   = $smtp_user;                     //SMTP username
+    $mail->Password   = $smtp_pass;                               //SMTP password
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
     $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
@@ -700,5 +719,86 @@ function adminCreate($db, $id)
     $mail->send();
   } catch (Exception $e) {
     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+  }
+}
+
+function updateUser($db, $firstname, $lastname)
+{
+  $stmt = $db->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname WHERE id = :id");
+  $stmt->bindParam(":firstname", $firstname);
+  $stmt->bindParam(":lastname", $lastname);
+  $stmt->bindParam(":id", $_SESSION["user"]["id"]);
+  $stmt->execute();
+
+  // Update sessions
+  $_SESSION["user"]["firstname"] = $firstname;
+  $_SESSION["user"]["lastname"] = $lastname;
+}
+
+function updatePassword($db,  $current, $new, $confirm)
+{
+  // Check if current password is correct
+  $stmt = $db->prepare("SELECT * FROM users WHERE id = :id");
+  $stmt->bindParam(":id", $_SESSION["user"]["id"]);
+  $stmt->execute();
+  $user = $stmt->fetch();
+
+  // Hash the current password
+  $current = hash("sha256", $current . $user["salt"]);
+
+  // Check if current password is correct
+  if ($current != $user["password"]) {
+    $_SESSION["error"] = array(
+      "code" => "PASSWORD",
+      "message" => "Het huidige wachtwoord is niet correct."
+    );
+    return false;
+  }
+
+  // Check if new password is the same as the confirm password
+  if ($new != $confirm) {
+    $_SESSION["error"] = array(
+      "code" => "PASSWORD",
+      "message" => "De nieuwe wachtwoorden komen niet overeen."
+    );
+    return false;
+  }
+
+  // Check if new password is too short
+  if (strlen($new) < 8) {
+    $_SESSION["error"] = array(
+      "code" => "PASSWORD",
+      "message" => "Het nieuwe wachtwoord is te kort."
+    );
+    return false;
+  }
+
+  // Check if new password is too long
+  if (strlen($new) > 64) {
+    $_SESSION["error"] = array(
+      "code" => "PASSWORD",
+      "message" => "Het nieuwe wachtwoord is te lang."
+    );
+    return false;
+  }
+
+  // Check if new password is too easy
+  if (preg_match("/^[a-zA-Z0-9]*$/", $new) == 0) {
+    $_SESSION["error"] = array(
+      "code" => "PASSWORD",
+      "message" => "Het nieuwe wachtwoord is te makkelijk."
+    );
+    return false;
+  }
+
+  // Save new password
+  if (!isset($_SESSION["error"])) {
+    $salt = hash("sha256", rand(0, 999999999));
+    $password = hash("sha256", $new . $salt);
+    $stmt = $db->prepare("UPDATE users SET password = :password, salt = :salt WHERE id = :id");
+    $stmt->bindParam(":password", $password);
+    $stmt->bindParam(":salt", $salt);
+    $stmt->bindParam(":id", $_SESSION["user"]["id"]);
+    $stmt->execute();
   }
 }

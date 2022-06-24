@@ -45,6 +45,8 @@ else if ($_SERVER["REQUEST_URI"] !== "/login") location("/login");
 
   <!--========== RECAPTCHA ==========-->
   <script src="https://www.google.com/recaptcha/api.js"></script>
+  <!--========== FLOWBITE ==========-->
+  <script src="https://unpkg.com/flowbite@1.4.7/dist/flowbite.js"></script>
 
   <!--========== TITLE ==========-->
   <?php
