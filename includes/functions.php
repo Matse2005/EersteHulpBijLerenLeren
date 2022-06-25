@@ -3,7 +3,7 @@
 
     @ Name: functions.php
     @ Author: MatseVH - https://www.matsevh.eu
-    @ Version: 1.0.2
+    @ Version: 1.0.1
     @ Date: 06-25-2022 <MM-DD-YYYY>
     @ Description: This file contains all the functions used in the website
     @ License: GNU General Public License v3.0
