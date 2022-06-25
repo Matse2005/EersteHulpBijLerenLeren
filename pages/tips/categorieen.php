@@ -43,7 +43,7 @@ $category = category_get($db, $_GET["cSlug"]);
 <section class="sectionSize sectionSizeWithoutCenter bg-secondary md:mt-0">
   <div class="md:grid md:mt-2 md:grid-cols-2 md:grid-rows-2">
     <?php
-    foreach (subcategories_get_by_category_id($db, $category["id"]) as $subcategory) {
+    foreach (subcategories($db, $category["id"]) as $subcategory) {
     ?>
 
       <a href="/tips/<?php print $subcategory["slug"] ?>" class="flex items-start font-source-code-pro my-6 mr-10">

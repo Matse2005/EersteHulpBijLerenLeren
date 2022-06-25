@@ -2,7 +2,7 @@
 
 <?php
 if (isset($_POST["create"])) {
-  admin_create($db, $_POST["user"]);
+  admin_add($db, $_POST["user"]);
 } else if (isset($_POST["remove"])) {
   admin_remove($db, $_POST["remove"]);
 }

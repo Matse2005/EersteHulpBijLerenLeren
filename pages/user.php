@@ -2,8 +2,8 @@
 include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/_header.php";
 include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/_navigation.php";
 
-if (isset($_POST["name"])) user_update($db, $_POST["firstname"], $_POST["lastname"]);
-else if (isset($_POST["password"])) password_update($db, $_POST["current"], $_POST["password"], $_POST["password_confirmation"]);
+if (isset($_POST["name"])) user_update($db, $_SESSION["user"]["id"], $_POST["firstname"], $_POST["lastname"]);
+else if (isset($_POST["password"])) user_password_update($db, $_POST["current"], $_POST["password"], $_POST["password_confirmation"]);
 ?>
 
 <?php if (isset($_SESSION["error"]["code"]) === "PASSWORD") { ?>

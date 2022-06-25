@@ -8,7 +8,7 @@ if (isset($_POST["submit"])) {
     $results[$category["id"]] =  $_POST["q" . $category["id"]];
   }
 
-  resukt_save($db, $user["id"], json_encode($results));
+  result_save($db, $user["id"], json_encode($results));
 }
 ?>
 

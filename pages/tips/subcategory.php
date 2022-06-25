@@ -2,7 +2,7 @@
 
 <?php
 if (!isset($_GET["id"])) print "<script>window.close();</script>";
-$subcategory = subcategory_get_by_id($db, $_GET["id"]);
+$subcategory = subcategory($db, $_GET["id"]);
 ?>
 
 <div class="flex h-screen">
@@ -22,7 +22,7 @@ $subcategory = subcategory_get_by_id($db, $_GET["id"]);
           <div class="relative sm:pb-12">
             <div class="space-y-16">
               <?php
-              foreach (tips_get_by_subcategory_id($db, $_GET["id"]) as $tip) {
+              foreach (tips($db, $_GET["id"]) as $tip) {
               ?>
                 <!-- ====== About Section Start -->
                 <section class="pt-12 overflow-hidden">

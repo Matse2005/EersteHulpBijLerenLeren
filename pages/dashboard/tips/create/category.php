@@ -2,7 +2,7 @@
 
 <?php
 if (isset($_POST["submit"])) {
-  category_create($db, $_POST["name"], $_POST["question"], $_POST["image"]);
+  category_add($db, $_POST["name"], $_POST["question"], $_POST["image"]);
   // Close popup
   echo '<script>window.close();</script>';
 }
