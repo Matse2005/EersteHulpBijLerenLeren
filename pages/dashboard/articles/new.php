@@ -8,7 +8,7 @@ if (isset($_POST["submit"])) {
   $description = $_POST["description"];
   $content = $_POST["content"];
 
-  newArticle($db, $title, $slug, $description, $content);
+  article_new($db, $title, $slug, $description, $content);
 }
 ?>
 

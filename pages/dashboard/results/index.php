@@ -2,6 +2,10 @@
 include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/_header.php";
 include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/_navigation.php";
 ?>
+<!--========== DATATABLES ==========-->
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="  https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+
 
 <!-- Hero -->
 <div class="overflow-hidden bg-secondary pt-20">

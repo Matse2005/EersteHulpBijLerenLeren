@@ -2,7 +2,7 @@
 
 <?php
 if (isset($_POST["remove"])) {
-  removeArticle($db, $_POST["remove"]);
+  article_remove($db, $_POST["remove"]);
 }
 ?>
 

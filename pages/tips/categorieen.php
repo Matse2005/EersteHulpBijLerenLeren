@@ -6,7 +6,7 @@ if (!isset($_GET["cSlug"])) {
   location("/tips");
   exit;
 }
-$category = getCategory($db, $_GET["cSlug"]);
+$category = category_get($db, $_GET["cSlug"]);
 ?>
 
 <!-- Hero -->
@@ -43,7 +43,7 @@ $category = getCategory($db, $_GET["cSlug"]);
 <section class="sectionSize sectionSizeWithoutCenter bg-secondary md:mt-0">
   <div class="md:grid md:mt-2 md:grid-cols-2 md:grid-rows-2">
     <?php
-    foreach (subCategories($db, $category["id"]) as $subcategory) {
+    foreach (subcategories_get_by_category_id($db, $category["id"]) as $subcategory) {
     ?>
 
       <a href="/tips/<?php print $subcategory["slug"] ?>" class="flex items-start font-source-code-pro my-6 mr-10">

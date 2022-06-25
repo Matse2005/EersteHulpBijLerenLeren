@@ -2,7 +2,7 @@
 
 <?php
 if (!isset($_GET["id"])) print "<script>window.close();</script>";
-$subcategory = getSubCategorieByID($db, $_GET["id"]);
+$subcategory = subcategory_get_by_id($db, $_GET["id"]);
 ?>
 
 <div class="flex h-screen">
@@ -11,7 +11,7 @@ $subcategory = getSubCategorieByID($db, $_GET["id"]);
       <div class="max-w-[52rem] mx-auto px-4 pb-28 sm:px-6 md:px-8 xl:px-12 lg:max-w-6xl">
         <div class="px-1 md:px-6 mx-auto ">
           <div class="grid grid-cols-1 sm:grid-cols-4">
-            <p class="my-6 col-span-3 text-xl font-semibold bg-secondary border-none focus:outline-none focus:border-none focus:ring-0"><a class="underline" href="/pages/tips/category.php?id=<?php print getCategoryByID($db, $subcategory["category"])['id'] ?>"><?php print getCategoryByID($db, $subcategory["category"])["title"] ?></a> <i class="fa-solid fa-chevron-right relative mt-px overflow-visible mx-2.5"></i> <span class="font-bold"><?php print $subcategory["title"] ?></span></p>
+            <p class="my-6 col-span-3 text-xl font-semibold bg-secondary border-none focus:outline-none focus:border-none focus:ring-0"><a class="underline" href="/pages/tips/category.php?id=<?php print category_get_by_id($db, $subcategory["category"])['id'] ?>"><?php print category_get_by_id($db, $subcategory["category"])["title"] ?></a> <i class="fa-solid fa-chevron-right relative mt-px overflow-visible mx-2.5"></i> <span class="font-bold"><?php print $subcategory["title"] ?></span></p>
             <div class="my-6 w-full flex justify-end">
               <button type="submit" name="submit" class="absolute bottom-3 right-3 sm:mt-2 sm:max-h-10 h-12 w-12 sm:h-full sm:w-auto sm:relative px-4 py-2 text-md bg-black text-white font-semibold rounded-full sm:rounded">
                 <i class="fa-regular fa-xmark"></i>
@@ -22,7 +22,7 @@ $subcategory = getSubCategorieByID($db, $_GET["id"]);
           <div class="relative sm:pb-12">
             <div class="space-y-16">
               <?php
-              foreach (getTipsByCategoryID($db, $_GET["id"]) as $tip) {
+              foreach (tips_get_by_subcategory_id($db, $_GET["id"]) as $tip) {
               ?>
                 <!-- ====== About Section Start -->
                 <section class="pt-12 overflow-hidden">

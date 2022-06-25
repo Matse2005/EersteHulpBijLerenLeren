@@ -2,9 +2,9 @@
 
 <?php
 if (isset($_POST["create"])) {
-  addWebsite($db, $_POST["name"], $_POST["url"]);
+  website_add($db, $_POST["name"], $_POST["url"]);
 } else if (isset($_POST["remove"])) {
-  removeWebsite($db, $_POST["remove"]);
+  website_remove($db, $_POST["remove"]);
 }
 ?>
 

@@ -2,7 +2,7 @@
 
 <?php
 if (!isset($_GET["id"])) print "<script>window.close();</script>";
-$category = getCategoryByID($db, $_GET["id"]);
+$category = category_get_by_id($db, $_GET["id"]);
 ?>
 
 <div class="flex h-screen">
@@ -22,7 +22,7 @@ $category = getCategoryByID($db, $_GET["id"]);
           <div class="relative sm:pb-12 mt-10">
             <div class="space-y-16">
               <?php
-              foreach (getSubCategoriesByCategroyID($db, $_GET["id"]) as $subcategory) {
+              foreach (subcategory_get_by_id($db, $_GET["id"]) as $subcategory) {
               ?>
                 <article class="relative">
                   <div class="relative">

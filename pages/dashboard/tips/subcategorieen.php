@@ -9,7 +9,7 @@
           Categorieën
         </h2>
         <div class="md:my-6 w-full flex md:justify-end">
-          <button onclick="window.open('/pages/dashboard/tips/create/category.php','name','width=800,height=800')" class="px-4 py-2 text-md bg-black text-white font-semibold rounded">
+          <button onclick="window.open('/pages/dashboard/tips/create/categorie.php','name','width=800,height=800')" class="px-4 py-2 text-md bg-black text-white font-semibold rounded">
             <i class="fa-regular fa-plus"></i>
             Nieuwe categorie
           </button>

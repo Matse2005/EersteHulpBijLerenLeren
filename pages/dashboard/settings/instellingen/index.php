@@ -9,12 +9,12 @@ if (isset($_POST["save"])) {
     $newfilename = round(microtime(true)) . '.' . end($filename);
 
     if (move_uploaded_file($_FILES["logo"]["tmp_name"], $folder . $newfilename)) {
-      settingsLogo($db, $newfilename);
+      settings_update_logo($db, $newfilename);
     }
   }
 
   if (isset($_POST["name"])) {
-    settingsUpdate($db, $_POST["name"]);
+    settings_update($db, $_POST["name"]);
   }
 }
 ?>

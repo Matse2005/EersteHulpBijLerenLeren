@@ -21,32 +21,27 @@ else if ($_SERVER["REQUEST_URI"] !== "/login") location("/login");
 <html lang="nl">
 
 <head>
+  <!--========== META ==========-->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F4F2ED">
+  <meta name="msapplication-navbutton-color" content="#F4F2ED">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#F4F2ED">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="<?php print settings($db)["name"] ?>">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="description" content="<?php print texts($db)["home_subtitle"] ?>">
+  <meta name="keywords" content="<?php print settings($db)["name"] ?>, Leren, MatseVH, Matse, Van Horebeek, Matse Van Horebeek">
 
   <!--========== FAVICON ==========-->
   <link rel="shortcut icon" href="/assets/img/header.svg">
 
-  <!--========== BOX ICONS ==========-->
-  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
-  <!--========== FONT AWESOME ==========-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
   <!--========== CSS ==========-->
-  <link rel="stylesheet" href="/assets/css/styles.css">
+  <!-- <link rel="stylesheet" href="/assets/css/styles.css"> -->
   <link rel="stylesheet" href="/assets/css/output.css">
 
-  <!--========== JS ==========-->
-  <script src="/assets/js/script.js"></script>
-
-  <!--========== DATATABLES ==========-->
-  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-  <script src="  https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
-
-  <!--========== RECAPTCHA ==========-->
-  <script src="https://www.google.com/recaptcha/api.js"></script>
   <!--========== FLOWBITE ==========-->
-  <script src="https://unpkg.com/flowbite@1.4.7/dist/flowbite.js"></script>
+  <!-- <script src="/assets/js/flowbite.js"></script> -->
 
   <!--========== TITLE ==========-->
   <?php
@@ -58,7 +53,7 @@ else if ($_SERVER["REQUEST_URI"] !== "/login") location("/login");
     $title = "Home";
   }
   ?>
-  <title><?php print $title ?></title>
+  <title><?php print $title ?> - <?php print settings($db)["name"] ?></title>
 </head>
 
 <body class="font-source-code-pro bg-secondary">

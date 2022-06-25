@@ -7,7 +7,7 @@ if (!isset($_GET["id"])) {
   exit();
 }
 
-$result = getResult($db, $_GET["id"]);
+$result = result_get($db, $_GET["id"]);
 if (!$result) {
   location("/hulp");
   exit();
@@ -72,7 +72,7 @@ if (!$result) {
                 $array = json_decode($result["results"], true);
                 arsort($array);
                 foreach ($array as $key => $value) {
-                  $category = getCategoryByID($db, $key);
+                  $category = category_get_by_id($db, $key);
                   if (!$category) {
                     continue;
                   }
@@ -84,17 +84,16 @@ if (!$result) {
                     <div class="rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
                       <div class="mb-8">
                         <p class="text-sm flex items-center">
-                          <i class="fa-regular fa-star"></i>
                           <span class="ml-1">
                             <?php
                             if ($value > 7) {
-                              print "Het is ten zeerste aangeraden om deze tips te lezen en te gebruiken.";
+                              print "Erg aangeraden";
                             } else if ($value > 5) {
-                              print "Het is aangeraden om deze tips te lezen en te gebruiken.";
+                              print "Aangeraden";
                             } else if ($value > 3) {
-                              print "Het is nog een beetje aangeraden om deze tips te lezen en te gebruiken.";
+                              print "Gemiddeld";
                             } else {
-                              print "Het is mogelijk om deze tips te lezen en te gebruiken.";
+                              print "Bijkomend";
                             }
                             ?>
                           </span>

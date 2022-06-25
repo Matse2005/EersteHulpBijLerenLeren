@@ -44,7 +44,7 @@ function database_connect()
   }
 }
 
-function getUser($db, $email = "null")
+function user_get($db, $email = "null")
 {
   if ($email == "null") {
     $email = $_SESSION["user"]["email"];
@@ -87,7 +87,7 @@ function getUser($db, $email = "null")
 
 function login($db, $email, $password)
 {
-  $user = getUser($db, $email);
+  $user = user_get($db, $email);
   if ($user) {
     if (hash("sha256", $password . $user["salt"]) == $user["password"]) {
 
@@ -111,7 +111,7 @@ function login($db, $email, $password)
   }
 }
 
-function randomString($length = 25)
+function string_random($length = 25)
 {
   $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=[]{}|;:<>,.?/';
   $charactersLength = strlen($characters);
@@ -122,16 +122,16 @@ function randomString($length = 25)
   return $randomString;
 }
 
-function encrypt($password)
+function string_encrypt($password)
 {
-  $salt = randomString();
+  $salt = string_random();
   return array(
     "salt" => $salt,
     "password" => hash("sha256", $password . $salt),
   );
 }
 
-function checkAdmin($db, $id)
+function admin_check($db, $id)
 {
   $stmt = $db->prepare("SELECT * FROM admins WHERE user_id = :id");
   $stmt->bindParam(":id", $id);
@@ -163,7 +163,7 @@ function bronnen($db)
   return $arr;
 }
 
-function addBron($db, $name, $type, $url = "N/A")
+function bron_add($db, $name, $type, $url = "N/A")
 {
   $stmt = $db->prepare("INSERT INTO bronnen (content, type, url) VALUES (:name, :type, :url)");
   $stmt->bindParam(":name", $name);
@@ -172,7 +172,7 @@ function addBron($db, $name, $type, $url = "N/A")
   $stmt->execute();
 }
 
-function removeBron($db, $id)
+function bron_remove($db, $id)
 {
   $stmt = $db->prepare("DELETE FROM bronnen WHERE id = :id");
   $stmt->bindParam(":id", $id);
@@ -188,7 +188,7 @@ function websites($db)
   return $arr;
 }
 
-function addWebsite($db, $name, $url)
+function website_add($db, $name, $url)
 {
   $stmt = $db->prepare("INSERT INTO websites (content, url) VALUES (:name, :url)");
   $stmt->bindParam(":name", $name);
@@ -196,7 +196,7 @@ function addWebsite($db, $name, $url)
   $stmt->execute();
 }
 
-function removeWebsite($db, $id)
+function website_remove($db, $id)
 {
   $stmt = $db->prepare("DELETE FROM websites WHERE id = :id");
   $stmt->bindParam(":id", $id);
@@ -213,7 +213,7 @@ function credits($db)
   return $arr;
 }
 
-function addCredit($db, $name, $url)
+function credit_add($db, $name, $url)
 {
   $stmt = $db->prepare("INSERT INTO credits (content, url) VALUES (:name, :url)");
   $stmt->bindParam(":name", $name);
@@ -221,7 +221,7 @@ function addCredit($db, $name, $url)
   $stmt->execute();
 }
 
-function removeCredit($db, $id)
+function credit_remove($db, $id)
 {
   $stmt = $db->prepare("DELETE FROM credits WHERE id = :id");
   $stmt->bindParam(":id", $id);
@@ -259,7 +259,7 @@ function categories($db)
   return $arr;
 }
 
-function getCategory($db, $slug)
+function category_get($db, $slug)
 {
   $stmt = $db->prepare("SELECT * FROM category WHERE slug = :slug");
   $stmt->bindParam(":slug", $slug);
@@ -269,7 +269,7 @@ function getCategory($db, $slug)
   return $arr;
 }
 
-function getCategoryByID($db, $id)
+function category_get_by_id($db, $id)
 {
   $stmt = $db->prepare("SELECT * FROM category WHERE id = :id");
   $stmt->bindParam(":id", $id);
@@ -279,7 +279,7 @@ function getCategoryByID($db, $id)
   return $arr;
 }
 
-function getSubCategoriesByCategroyID($db, $id)
+function subcategories_get_by_category_id($db, $id)
 {
   $stmt = $db->prepare("SELECT * FROM subcategory WHERE category = :id");
   $stmt->bindParam(":id", $id);
@@ -289,7 +289,7 @@ function getSubCategoriesByCategroyID($db, $id)
   return $arr;
 }
 
-function getSubCategorieByID($db, $id)
+function subcategory_get_by_id($db, $id)
 {
   $stmt = $db->prepare("SELECT * FROM subcategory WHERE id = :id");
   $stmt->bindParam(":id", $id);
@@ -299,7 +299,7 @@ function getSubCategorieByID($db, $id)
   return $arr;
 }
 
-function getTipsByCategoryID($db, $id)
+function tips_get_by_subcategory_id($db, $id)
 {
   $stmt = $db->prepare("SELECT * FROM tips WHERE subcategory = :id");
   $stmt->bindParam(":id", $id);
@@ -342,7 +342,7 @@ function format($timestamp)
   return $date;
 }
 
-function subCategories($db, $category = "null")
+function subcatgeories($db, $category = "null")
 {
   if ($category == "null") $stmt = $db->prepare("SELECT * FROM tips");
   else  $stmt = $db->prepare("SELECT * FROM subcategory WHERE category = :category");
@@ -363,7 +363,7 @@ function articles($db)
   return $arr;
 }
 
-function getArticle($db, $slug)
+function article_get($db, $slug)
 {
   $stmt = $db->prepare("SELECT * FROM articles WHERE slug = :slug");
   $stmt->bindParam(":slug", $slug);
@@ -373,7 +373,7 @@ function getArticle($db, $slug)
   return $arr;
 }
 
-function newArticle($db, $title, $slug, $description, $content)
+function article_new($db, $title, $slug, $description, $content)
 {
   $stmt = $db->prepare("SELECT slug FROM articles");
   $stmt->execute();
@@ -399,14 +399,14 @@ function newArticle($db, $title, $slug, $description, $content)
   echo "<script>window.close();</script>";
 }
 
-function removeArticle($db, $id)
+function article_remove($db, $id)
 {
   $stmt = $db->prepare("DELETE FROM articles WHERE id = :id");
   $stmt->bindParam(":id", $id);
   $stmt->execute();
 }
 
-function editArticle($db, $id, $title, $slug, $description, $content)
+function article_edit($db, $id, $title, $slug, $description, $content)
 {
   $stmt = $db->prepare("UPDATE articles SET title = :title, slug = :slug, description = :description, content = :content WHERE id = :id");
   $stmt->bindParam(":title", $title);
@@ -420,7 +420,7 @@ function editArticle($db, $id, $title, $slug, $description, $content)
   echo "<script>window.close();</script>";
 }
 
-function updateHomePage($db, $home_title, $home_subtitle, $home_howitworks_one_title, $home_howitworks_one_subtitle, $home_howitworks_two_title, $home_howitworks_two_subtitle, $home_howitworks_three_title, $home_howitworks_three_subtitle, $home_extra_websites, $home_extra_bronnen, $home_extra_credits)
+function homepage_update($db, $home_title, $home_subtitle, $home_howitworks_one_title, $home_howitworks_one_subtitle, $home_howitworks_two_title, $home_howitworks_two_subtitle, $home_howitworks_three_title, $home_howitworks_three_subtitle, $home_extra_websites, $home_extra_bronnen, $home_extra_credits)
 {
   $stmt = $db->prepare("UPDATE tekst SET home_title = :home_title, home_subtitle = :home_subtitle, home_howitworks_one_title = :home_howitworks_one_title, home_howitworks_one_subtitle = :home_howitworks_one_subtitle, home_howitworks_two_title = :home_howitworks_two_title, home_howitworks_two_subtitle = :home_howitworks_two_subtitle, home_howitworks_three_title = :home_howitworks_three_title, home_howitworks_three_subtitle = :home_howitworks_three_subtitle, home_extra_websites = :home_extra_websites, home_extra_bronnen = :home_extra_bronnen, home_extra_credits = :home_extra_credits");
   $stmt->bindParam(":home_title", $home_title);
@@ -437,7 +437,7 @@ function updateHomePage($db, $home_title, $home_subtitle, $home_howitworks_one_t
   $stmt->execute();
 }
 
-function saveResult($db, $user_id, $result)
+function resukt_save($db, $user_id, $result)
 {
   $stmt = $db->prepare("INSERT INTO results (user_id, results) VALUES (:user_id, :results)");
   $stmt->bindParam(":user_id", $user_id);
@@ -457,14 +457,14 @@ function settings($db)
   return $arr;
 }
 
-function settingsUpdate($db, $name)
+function settings_update($db, $name)
 {
   $stmt = $db->prepare("UPDATE settings SET name = :name");
   $stmt->bindParam(":name", $name);
   $stmt->execute();
 }
 
-function settingsLogo($db, $logo)
+function settings_update_logo($db, $logo)
 {
   $stmt = $db->prepare("UPDATE settings SET logo = :logo");
   $stmt->bindParam(":logo", $logo);
@@ -491,7 +491,7 @@ function user($db, $id)
   return $arr;
 }
 
-function getResult($db, $id)
+function result_get($db, $id)
 {
   $stmt = $db->prepare("SELECT * FROM results WHERE id = :id");
   $stmt->bindParam(":id", $id);
@@ -585,9 +585,9 @@ function emails($db)
   return $emails;
 }
 
-function userCreate($db, $firstname, $lastname, $email, $password)
+function user_create($db, $firstname, $lastname, $email, $password)
 {
-  $hashed = encrypt($password);
+  $hashed = string_encrypt($password);
 
   $stmt = $db->prepare("INSERT INTO users (firstname, lastname, email, password, salt, status) VALUES (:firstname, :lastname, :email, :password, :salt, 'unchanged')");
   $stmt->bindParam(":firstname", $firstname);
@@ -639,13 +639,13 @@ function userCreate($db, $firstname, $lastname, $email, $password)
   }
 }
 
-function userRemove($db, $id)
+function user_remove($db, $id)
 {
   $stmt = $db->prepare("DELETE FROM users WHERE id = :id");
   $stmt->bindParam(":id", $id);
   $stmt->execute();
 
-  adminRemove($db, $id);
+  admin_remove($db, $id);
 }
 
 function admins($db)
@@ -666,14 +666,14 @@ function admins($db)
   return $admins;
 }
 
-function adminRemove($db, $id)
+function admin_remove($db, $id)
 {
   $stmt = $db->prepare("DELETE FROM admins WHERE user_id = :id");
   $stmt->bindParam(":id", $id);
   $stmt->execute();
 }
 
-function adminCreate($db, $id)
+function admin_create($db, $id)
 {
   $stmt = $db->prepare("INSERT INTO admins (user_id) VALUES (:id)");
   $stmt->bindParam(":id", $id);
@@ -722,7 +722,7 @@ function adminCreate($db, $id)
   }
 }
 
-function updateUser($db, $firstname, $lastname)
+function user_update($db, $firstname, $lastname)
 {
   $stmt = $db->prepare("UPDATE users SET firstname = :firstname, lastname = :lastname WHERE id = :id");
   $stmt->bindParam(":firstname", $firstname);
@@ -735,7 +735,7 @@ function updateUser($db, $firstname, $lastname)
   $_SESSION["user"]["lastname"] = $lastname;
 }
 
-function updatePassword($db,  $current, $new, $confirm)
+function password_update($db,  $current, $new, $confirm)
 {
   // Check if current password is correct
   $stmt = $db->prepare("SELECT * FROM users WHERE id = :id");
@@ -801,4 +801,17 @@ function updatePassword($db,  $current, $new, $confirm)
     $stmt->bindParam(":id", $_SESSION["user"]["id"]);
     $stmt->execute();
   }
+}
+
+// Create a new category
+function category_create($db, $title, $question, $image)
+{
+  $slug = str_replace(" ", "-", $title);
+  $slug = str_replace("'", "", $slug);
+  $stmt = $db->prepare("INSERT INTO category (title, slug, question, image) VALUES (:title, :slug, :question, :image)");
+  $stmt->bindParam(":title", $title);
+  $stmt->bindParam(":slug", $slug);
+  $stmt->bindParam(":question", $question);
+  $stmt->bindParam(":image", $image);
+  $stmt->execute();
 }

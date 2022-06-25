@@ -21,7 +21,7 @@ if (isset($_POST["submit"])) {
   $description = $_POST["description"];
   $content = $_POST["content"];
 
-  editArticle($db, $id, $title, $slug, $description, $content);
+  article_edit($db, $id, $title, $slug, $description, $content);
 }
 ?>
 

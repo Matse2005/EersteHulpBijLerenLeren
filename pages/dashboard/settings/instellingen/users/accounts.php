@@ -2,9 +2,9 @@
 
 <?php
 if (isset($_POST["create"])) {
-  userCreate($db, $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["password"]);
+  user_create($db, $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["password"]);
 } else if (isset($_POST["remove"])) {
-  userRemove($db, $_POST["remove"]);
+  user_remove($db, $_POST["remove"]);
 }
 ?>
 

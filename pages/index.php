@@ -4,7 +4,7 @@
   $texts = texts($db);
   ?>
   <!-- Hero -->
-  <section class="pt-24 md:mt-0 md:h-screen flex flex-col justify-center text-center md:text-left md:flex-row md:justify-between md:items-center lg:px-48 md:px-12 px-4 bg-secondary">
+  <section onload="faq()" class="pt-24 md:mt-0 md:h-screen flex flex-col justify-center text-center md:text-left md:flex-row md:justify-between md:items-center lg:px-48 md:px-12 px-4 bg-secondary">
     <div class="md:flex-1 md:mr-10">
       <h1 class="font-source-code-pro text-5xl font-bold mb-7">
         <?php print $texts["home_title"] ?>
@@ -128,5 +128,6 @@
     <hr class="w-full bg-black" />
 
   </section>
+  <script src="/assets/js/script.js"></script>
 
   <?php include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/_footer.php"; ?>

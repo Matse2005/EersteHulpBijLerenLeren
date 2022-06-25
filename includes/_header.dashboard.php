@@ -6,7 +6,7 @@ if (isset($_SESSION["user"])) $user = $_SESSION["user"];
 // Check if the file is the signin page
 else if ($_SERVER["REQUEST_URI"] !== "/login") location("/login");
 
-if (!checkAdmin($db, $user["id"])) location("/");
+if (!admin_check($db, $user["id"])) location("/");
 ?>
 
 <!DOCTYPE html>
@@ -22,40 +22,35 @@ if (!checkAdmin($db, $user["id"])) location("/");
 <html :class="{ 'theme-dark': dark }" x-data="data()" lang="nl">
 
 <head>
+  <!--========== META ==========-->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F4F2ED">
+  <meta name="msapplication-navbutton-color" content="#F4F2ED">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#F4F2ED">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="<?php print settings($db)["name"] ?>">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="description" content="<?php print texts($db)["home_subtitle"] ?>">
+  <meta name="keywords" content="<?php print settings($db)["name"] ?>, Leren, MatseVH, Matse, Van Horebeek, Matse Van Horebeek">
 
   <!--========== FAVICON ==========-->
   <link rel="shortcut icon" href="/assets/img/header.svg">
 
-  <!--========== BOX ICONS ==========-->
-  <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
-  <!--========== FONT AWESOME ==========-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
   <!--========== CSS ==========-->
-  <link rel="stylesheet" href="/assets/css/styles.css">
+  <!-- <link rel="stylesheet" href="/assets/css/styles.css"> -->
   <link rel="stylesheet" href="/assets/css/output.css">
   <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.1.1/css/all.css">
 
   <!--========== JS ==========-->
-  <script src="/assets/js/script.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+  <script src="/assets/js/alpine.min.js" defer></script>
   <script src="/assets/js/init-alpine.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" defer></script>
-  <script src="/assets/js/charts-lines.js" defer></script>
-  <script src="/assets/js/charts-pie.js" defer></script>
   <!-- You need focus-trap.js to make the modal accessible -->
   <script src="/assets/js/focus-trap.js" defer></script>
 
-  <!--========== RECAPTCHA ==========-->
-  <script src="https://www.google.com/recaptcha/api.js"></script>
-
   <!--========== DATATABLES ==========-->
-  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-  <script src="  https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/datatables.min.js"></script>
 
   <!--========== TITLE ==========-->
   <?php
@@ -67,7 +62,7 @@ if (!checkAdmin($db, $user["id"])) location("/");
     $title = "Home";
   }
   ?>
-  <title>Dashboard | <?php print $title ?></title>
+  <title>Dashboard - <?php print $title ?> - <?php print settings($db)["name"] ?></title>
 </head>
 
 <body class="font-source-code-pro bg-secondary">

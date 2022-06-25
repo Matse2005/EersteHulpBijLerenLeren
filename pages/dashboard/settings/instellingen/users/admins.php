@@ -2,9 +2,9 @@
 
 <?php
 if (isset($_POST["create"])) {
-  adminCreate($db, $_POST["user"]);
+  admin_create($db, $_POST["user"]);
 } else if (isset($_POST["remove"])) {
-  adminRemove($db, $_POST["remove"]);
+  admin_remove($db, $_POST["remove"]);
 }
 ?>
 
@@ -102,7 +102,7 @@ if (isset($_POST["create"])) {
                     <option style="display:none">
                       <?php
                       foreach (users($db) as $user) {
-                        if (checkAdmin($db, $user["id"])) continue;
+                        if (admin_check($db, $user["id"])) continue;
                       ?>
                     <option value="<?php print $user["id"] ?>"><?php print $user["firstname"] . " " . $user["lastname"] ?> &lt;<?php print $user["email"] ?>&gt;</option>
                   <?php

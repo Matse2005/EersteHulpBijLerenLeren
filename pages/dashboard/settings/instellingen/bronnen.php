@@ -3,12 +3,12 @@
 <?php
 if (isset($_POST["create"])) {
   if ($_POST["type"] != "url") {
-    addBron($db, $_POST["name"], $_POST["type"]);
+    bron_add($db, $_POST["name"], $_POST["type"]);
   } else {
-    addBron($db, $_POST["name"], $_POST["type"], $_POST["url"]);
+    bron_add($db, $_POST["name"], $_POST["type"], $_POST["url"]);
   }
 } else if (isset($_POST["remove"])) {
-  removeBron($db, $_POST["remove"]);
+  bron_remove($db, $_POST["remove"]);
 }
 ?>
 

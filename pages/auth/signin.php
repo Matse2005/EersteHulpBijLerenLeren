@@ -10,7 +10,7 @@ if (isset($_POST["submit"])) {
 
 <div class="2xl:container h-screen m-auto font-source-code-pro">
   <div hidden class="fixed inset-0 w-7/12 lg:block">
-    <img class="w-full h-full object-cover" src="/assets/img/signin.jpg" alt="Sign in screen image">
+    <img class="w-full h-full object-cover" src="/assets/img/signin.webp" alt="Sign in screen image">
   </div>
   <div hidden role="hidden" class="fixed inset-0 w-6/12 ml-auto bg-secondary bg-opacity-100 backdrop-blur-3xl lg:block"></div>
   <div class="relative h-full ml-auto lg:w-6/12">
@@ -22,7 +22,7 @@ if (isset($_POST["submit"])) {
       <div class="mt-12">
         <button class="py-3 px-6 w-full rounded-xl bg-orange-100 hover:bg-orange-200 focus:bg-orange-100 active:bg-orange-200">
           <div class="flex gap-3 justify-center">
-            <object type="image/svg+xml" data="/assets/img/smartschool.svg" class="w-5">
+            <object type="image/svg+xml" data="/assets/img/smartschool.svg" class="w-5" aria-label="Smartschool Logo">
               Smartschool App Logo
             </object>
             <span class="block w-max font-medium tracking-wide text-sm text-orange-700">met Smartschool</span>
@@ -30,7 +30,7 @@ if (isset($_POST["submit"])) {
         </button>
       </div>
 
-      <div role="hidden" class="mt-12 border-t">
+      <div class="mt-12 border-t">
         <span class="block w-max mx-auto -mt-3 px-4 text-center text-gray-500 bg-secondary">Of</span>
       </div>
 
@@ -61,7 +61,7 @@ if (isset($_POST["submit"])) {
       <div class="border-t pt-12">
         <div class="space-y-2 text-center">
           <!-- Place svg object -->
-          <object type="image/svg+xml" data="/assets/img/logo.svg" class="w-40 m-auto grayscale">
+          <object type="image/svg+xml" data="/assets/img/logo.svg" class="w-40 m-auto grayscale" aria-label="MatseVH Logo">
             MatseVH Logo
           </object>
           <span class="block text-sm tracking-wide text-gray-500">&copy; Copyright <?php print date("Y") ?> <br>Matse Van Horebeek</span>

@@ -2,7 +2,7 @@
 
 <?php
 if (isset($_POST["save"])) {
-  updateHomePage($db, $_POST["home_title"], $_POST["home_subtitle"], $_POST["home_howitworks_one_title"], $_POST["home_howitworks_one_subtitle"], $_POST["home_howitworks_two_title"], $_POST["home_howitworks_two_subtitle"], $_POST["home_howitworks_three_title"], $_POST["home_howitworks_three_subtitle"], $_POST["home_extra_websites"], $_POST["home_extra_bronnen"], $_POST["home_extra_credits"]);
+  homepage_update($db, $_POST["home_title"], $_POST["home_subtitle"], $_POST["home_howitworks_one_title"], $_POST["home_howitworks_one_subtitle"], $_POST["home_howitworks_two_title"], $_POST["home_howitworks_two_subtitle"], $_POST["home_howitworks_three_title"], $_POST["home_howitworks_three_subtitle"], $_POST["home_extra_websites"], $_POST["home_extra_bronnen"], $_POST["home_extra_credits"]);
 }
 ?>
 

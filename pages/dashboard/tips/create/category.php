@@ -2,13 +2,9 @@
 
 <?php
 if (isset($_POST["submit"])) {
-  $title = $_POST["title"];
-  $slug = str_replace(" ", "-", $title);
-  $slug = strtolower($slug);
-  $description = $_POST["description"];
-  $content = $_POST["content"];
-
-  newArticle($db, $title, $slug, $description, $content);
+  category_create($db, $_POST["name"], $_POST["question"], $_POST["image"]);
+  // Close popup
+  echo '<script>window.close();</script>';
 }
 ?>
 
@@ -16,7 +12,7 @@ if (isset($_POST["submit"])) {
   <form action="" method="post" class="w-full px-5 sm:px-5 md:px-5 h-full overflow-y-auto">
     <div class="px-1 md:px-6 mx-auto ">
       <div class="grid grid-cols-4">
-        <input name="title" placeholder="Categorie title..." class="my-6 col-span-3 text-xl font-semibold bg-secondary border-none focus:outline-none focus:border-none focus:ring-0" />
+        <input name="title" placeholder="Categorie titel..." class="my-6 col-span-3 text-xl font-semibold bg-secondary border-none focus:outline-none focus:border-none focus:ring-0" />
         <div class="my-6 w-full flex justify-end">
           <button type="submit" name="submit" class="absolute bottom-3 right-3 h-12 w-12 sm:h-full sm:w-auto sm:relative px-4 py-2 text-md bg-black text-white font-semibold rounded-full sm:rounded">
             <span class="hidden sm:inline">Publiceer</span>
@@ -26,65 +22,47 @@ if (isset($_POST["submit"])) {
       </div>
 
       <div class="w-full overflow-hidden rounded-lg shadow-xs">
-        <div class="slug mb-6">
-          <input placeholder="Wat zal er in de url getoond worden " name="slug" id="slug" class="w-full bg-secondary resize-none border-none focus:outline-none focus:border-none focus:ring-0">
+        <!-- QUestion input -->
+        <div class="w-full bg-secondary resize-none border-none focus:outline-none focus:border-none focus:ring-0">
+          <input name="question" placeholder="Welke stelling hoort er bij deze categorie?..." class="my-6 w-full h-full text-xl font-semibold bg-secondary border-none focus:outline-none focus:border-none focus:ring-0" />
         </div>
-        <div class="description mb-6">
-          <textarea placeholder="Een korte beschrijving waarover het volgende artikel zal gaan..." name="description" id="description" class="w-full bg-secondary resize-none border-none focus:outline-none focus:border-none focus:ring-0 border-l-4" rows="2"></textarea>
+        <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Image Selector Dropdown -->
+          <div class="w-full bg-secondary resize-none border-none focus:outline-none focus:border-none focus:ring-0">
+            <select name="image" id="image" onchange="selectImage()" class="w-full bg-secondary resize-none border-none focus:outline-none focus:border-none focus:ring-0">
+              <option value="" disabled selected>Selecteer een pose</option>
+              <?php
+              foreach (images() as $image) {
+              ?>
+                <option value="<?php echo $image["id"]; ?>"><?php echo $image["name"]; ?></option>
+              <?php
+              }
+              ?>
+            </select>
+          </div>
+          <!-- Show image when selected -->
+          <div class="w-full bg-secondary resize-none border-none focus:outline-none focus:border-none focus:ring-0">
+            <img src="" id="newImg" class="w-full max-9/10 bg-secondary resize-none border-none focus:outline-none focus:border-none focus:ring-0" />
+          </div>
         </div>
-
-        <div class="editor">
-          <textarea name="content" placeholder="Begin met het typen van je artikel..." id="editor" cols="30" rows="10"></textarea>
-        </div id="editor">
       </div>
     </div>
   </form>
 </div>
 </div>
 
-<!-- <script src="/assets/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script> -->
-<!-- <script>
-  tinymce.init({
-    selector: 'textarea#editor',
-    menubar: true,
-    plugins: [
-      "list",
-      "advlist",
-      "autolink",
-      "link",
-      "image",
-      "charmap",
-      "code",
-      "table",
-      "textcolor",
-      "colorpicker",
-      "emoticons",
-      "hr",
-      "media",
-      "paste",
-      "fullscreen",
-      "insertdatetime",
-      "preview",
-      "searchreplace",
-      "wordcount",
-      "visualblocks",
-      "visualchars",
-      "nonbreaking",
-      "contextmenu",
-      "directionality",
-      "fullpage",
-      "pagebreak",
-      "save",
-      "template",
-      "paste",
-      "textcolor",
-      "colorpicker",
-      "textpattern",
-      "toc",
-    ],
-    toolbar: "insert | undo redo | blocks | fontsize | bold italic forecolor backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link image media | fullscreen",
-  });
-</script> -->
+<script>
+  function selectImage() {
+    var e = document.getElementById("image");
+    var imageId = e.value;
+    var returnImg = document.getElementById("newImg");
+    var poses = <?php print json_encode(images()); ?>;
+    var image = poses.find(function(img) {
+      return img.id == imageId;
+    });
+    returnImg.src = "/assets/img/" + image.image;
+  }
+</script>
 
 </body>
 

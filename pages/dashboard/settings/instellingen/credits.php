@@ -2,9 +2,9 @@
 
 <?php
 if (isset($_POST["create"])) {
-  addCredit($db, $_POST["name"], $_POST["url"]);
+  credit_add($db, $_POST["name"], $_POST["url"]);
 } else if (isset($_POST["remove"])) {
-  removeCredit($db, $_POST["remove"]);
+  credit_remove($db, $_POST["remove"]);
 }
 ?>
 

@@ -7,7 +7,7 @@ if (!isset($_GET["slug"])) {
   exit;
 }
 
-$article = getArticle($db, $_GET["slug"]);
+$article = article_get($db, $_GET["slug"]);
 if (!$article) {
   location("/artikels");
   exit;
