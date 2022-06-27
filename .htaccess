@@ -21,6 +21,8 @@ RewriteRule ^profiel$ pages/user.php
 RewriteRule ^dashboard$ pages/dashboard/index.php
 RewriteRule ^dashboard/$ pages/dashboard/index.php
 
+RewriteRule ^dashboard/documentatie$ pages/dashboard/documentatie.php
+
 RewriteRule ^$ pages/index.php
 
 <IfModule mod_headers.c>
