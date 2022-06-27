@@ -1726,3 +1726,155 @@ function email_send($db, $to, $to_name, $subject, $title, $content, $button_text
     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
   }
 }
+
+/*
+  # name: files
+  # description: 
+      This function will return the extra files of the website.
+  # parameters:
+      $db: The database connection.
+  # returns:
+      An array of files.
+  # author: MatseVH
+  # modified: 06-27-2022 <MM-DD-YYYY>
+*/
+function files($db)
+{
+  // Create array
+  $arr = array();
+
+  // Get all files
+  $stmt = $db->prepare("SELECT * FROM files");
+  $stmt->execute();
+  $arr = $stmt->fetchAll();
+
+  // Return the array
+  return $arr;
+}
+
+/*
+  # name: file_upload
+  # description: 
+      This function will upload a file.
+  # parameters:
+      $db: The database connection.
+      $file: The file to upload.
+  # returns:
+      A file name.
+  # author: MatseVH
+  # modified: 06-27-2022 <MM-DD-YYYY>
+*/
+function file_upload($db, $file)
+{
+  $filename = explode(".", $file["name"]);
+  $tempname = $file["tmp_name"];
+  $folder = $_SERVER["DOCUMENT_ROOT"] . "/assets/uploads/";
+  $newfilename = round(microtime(true)) . '.' . end($filename);
+
+  if (move_uploaded_file($file["tmp_name"], $folder . $newfilename))
+    return $newfilename;
+}
+
+/*
+  # name: file_to_database
+  # description: 
+      This function will upload a file to the database.
+  # parameters:
+      $db: The database connection.
+      $title: The title of the file.
+      $note: The note of the file.
+      $file: The file to upload.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-27-2022 <MM-DD-YYYY>
+*/
+function file_to_database($db, $title, $note, $file)
+{
+  // Upload the file
+  $filename = file_upload($db, $file);
+  // Insert the file into the database
+  $stmt = $db->prepare("INSERT INTO files (title, note, file) VALUES (:title, :note, :file)");
+  $stmt->bindParam(":title", $title);
+  $stmt->bindParam(":note", $note);
+  $stmt->bindParam(":file", $filename);
+  $stmt->execute();
+}
+
+/*
+  # name: file_delete
+  # description: 
+      This function will delete a file.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the file to delete.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-27-2022 <MM-DD-YYYY>
+*/
+function file_delete($db, $id)
+{
+  // Get the file
+  $stmt = $db->prepare("SELECT * FROM files WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+  $file = $stmt->fetch();
+  // Delete the file
+  unlink($_SERVER["DOCUMENT_ROOT"] . "/assets/uploads/" . $file["file"]);
+  // Delete the file from the database
+  $stmt = $db->prepare("DELETE FROM files WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+}
+
+/*
+  # name: file_download
+  # description: 
+      This function will download a file.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the file to download.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-27-2022 <MM-DD-YYYY>
+*/
+function file_download($db, $id)
+{
+  // Get the file
+  $stmt = $db->prepare("SELECT * FROM files WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+  $file = $stmt->fetch();
+  if ($file) {
+    // Download the file
+    header("Content-Type: application/octet-stream");
+    header("Content-Disposition: attachment; filename=" . $file["file"]);
+    readfile($_SERVER["DOCUMENT_ROOT"] . "/assets/uploads/" . $file["file"]);
+    return true;
+  } else return false;
+}
+
+/*
+  # name: file_download_link
+  # description: 
+      This function will return a download link for a file.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the file to download.
+  # returns:
+      A download link.
+  # author: MatseVH
+  # modified: 06-27-2022 <MM-DD-YYYY>
+*/
+function file_download_link($db, $id)
+{
+  // Get the file
+  $stmt = $db->prepare("SELECT * FROM files WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+  $file = $stmt->fetch();
+  // Return the download link
+  return $_SERVER["HTTP_HOST"] . "/download/" . $id;
+}

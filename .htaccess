@@ -6,6 +6,9 @@ RewriteRule ^login$ pages/auth/signin.php
 RewriteRule ^wachtwoord_vergeten$ pages/auth/password.php
 RewriteRule ^loguit$ pages/auth/signout.php
 
+RewriteRule ^bestanden$ pages/files/index.php
+RewriteRule ^download/([0-9]+)$ pages/files/download.php?id=$1
+
 RewriteRule ^hulp$ pages/dashboard/results/index.php
 RewriteRule ^hulp/([0-9]+)$ pages/dashboard/results/categories.php?id=$1
 
