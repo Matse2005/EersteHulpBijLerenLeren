@@ -9,11 +9,9 @@
     }
     ?>
   </div>
-  <ul class="font-source-code-pro items-center hidden md:flex">
+  <ul class="font-source-code-pro items-center hidden lg:flex">
     <li class="mx-3 ">
-      <a class="growing-underline" href="/">
-        Start
-      </a>
+      <a class="growing-underline" href="/">Start</a>
     </li>
     <li class="growing-underline mx-3">
       <a href="/tips">Tips</a>
@@ -25,15 +23,20 @@
       <a href="/hulp">Mijn Hulp</a>
     </li>
     <li class="growing-underline mx-3">
-      <a href="/profiel"><?php print $_SESSION["user"]["firstname"] ?> <?php print $_SESSION["user"]["lastname"] ?></a>
+      <a href="/profiel">Mijn Profiel</a>
     </li>
+    <?php if (admin_check($db, $user["id"])) { ?>
+      <li class="growing-underline mx-3">
+        <a href="/dashboard/">Dashboard</a>
+      </li>
+    <?php } ?>
   </ul>
-  <div class="font-source-code-pro hidden md:block">
+  <div class="font-source-code-pro hidden lg:block mt-3">
     <a href="/loguit" class="py-2 px-4 text-white bg-black rounded-3xl">
       Log uit
     </a>
   </div>
-  <div id="showMenu" class="md:hidden">
+  <div id="showMenu" class="lg:hidden p-3">
     <img src='/assets/img/template/logos/Menu.svg' alt="Menu icon" />
   </div>
 </nav>
@@ -55,8 +58,13 @@
       <a href="/hulp">Mijn Hulp</a>
     </li>
     <li class="my-6">
-      <a href="/profiel"><?php print $_SESSION["user"]["firstname"] ?> <?php print $_SESSION["user"]["lastname"] ?></a>
+      <a href="/profiel">Mijn Profiel</a>
     </li>
+    <?php if (admin_check($db, $user["id"])) { ?>
+      <li class="my-6">
+        <a href="/dashboard/">Dashboard</a>
+      </li>
+    <?php } ?>
     <li class="my-6">
       <a href="/loguit" class="py-2 px-4 text-white bg-black rounded-3xl">Log uit</a>
     </li>

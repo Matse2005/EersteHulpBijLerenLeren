@@ -4,7 +4,12 @@ $db = database_connect();
 
 if (isset($_SESSION["user"])) $user = $_SESSION["user"];
 // Check if the file is the signin page
-else if ($_SERVER["REQUEST_URI"] !== "/login") location("/login");
+else if ($_SERVER["REQUEST_URI"] !== "/login") {
+  // Set redirect session variable
+  $_SESSION["redirect"] = $_SERVER["REQUEST_URI"];
+  // Redirect to login page
+  location("/login");
+};
 
 if (!admin_check($db, $user["id"])) location("/");
 ?>

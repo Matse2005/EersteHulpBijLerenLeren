@@ -7,6 +7,9 @@
       © <?php print date("Y") ?> <a href="https://matsevh.eu" target="_blank" class="underline" rel="noopener noreferrer">MatseVH</a>. Alle rechten voorbehouden
     </div>
   </section>
+
+  <!--========== JS ==========-->
+  <script src="/assets/js/script.js"></script>
   </body>
 
   </html>

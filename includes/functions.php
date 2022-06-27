@@ -199,13 +199,14 @@ function user_by_email($db, $email = "null")
   # returns:
       $user: The user.
   # author: MatseVH
-  # modified: 06-25-2022 <MM-DD-YYYY>
+  # modified: 06-26-2022 <MM-DD-YYYY>
 */
-function user_create($db, $firstname, $lastname, $email, $password)
+function user_create($db, $firstname, $lastname, $email)
 {
+  $password = string_random(32);
   $hashed = string_encrypt($password);
 
-  $stmt = $db->prepare("INSERT INTO users (firstname, lastname, email, password, salt, status) VALUES (:firstname, :lastname, :email, :password, :salt, 'unchanged')");
+  $stmt = $db->prepare("INSERT INTO users (firstname, lastname, email, password, salt) VALUES (:firstname, :lastname, :email, :password, :salt)");
   $stmt->bindParam(":firstname", $firstname);
   $stmt->bindParam(":lastname", $lastname);
   $stmt->bindParam(":email", $email);
@@ -213,46 +214,30 @@ function user_create($db, $firstname, $lastname, $email, $password)
   $stmt->bindParam(":salt", $hashed["salt"]);
   $stmt->execute();
 
-  //Create an instance; passing `true` enables exceptions
-  $mail = new PHPMailer(true);
-
-  try {
-    include $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
-
-    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-    $mail->isSMTP();
-    $mail->SMTPDebug = 0;
-    $mail->CharSet = "utf-8";                                      //Send using SMTP
-    $mail->Host       = $smtp_host;                     //Set the SMTP server to send through
-    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-    $mail->Username   = $smtp_user;                     //SMTP username
-    $mail->Password   = $smtp_pass;                               //SMTP password
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
-    $mail->Port       = 587;                                //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
-
-    //Recipients
-    $mail->setFrom("noreply@m-vh.eu", settings($db)["name"]);
-    $mail->addAddress($email, $firstname . " " . $lastname);     //Add a recipient
-
-    //Content
-    $mail->isHTML(true);                                  //Set email format to HTML
-    $mail->Subject = "Jou account voor " . settings($db)["name"] . " is aangemaakt";
-    // Include HTML files as $mail->Body 
-    $template = file_get_contents($_SERVER["DOCUMENT_ROOT"] . "/includes/emails/user-create.html");
-    $template = str_replace("{firstname}", $firstname, $template);
-    $template = str_replace("{lastname}", $lastname, $template);
-    $template = str_replace("{email}", $email, $template);
-    $template = str_replace("{password}", $password, $template);
-    $template = str_replace("{login_url}", "https://" . $_SERVER["HTTP_HOST"] . "/login", $template);
-    $template = str_replace("{name}", settings($db)["name"], $template);
-    $template = str_replace("{url}", $_SERVER["HTTP_HOST"], $template);
-    $mail->Body = $template;
-    $mail->AltBody = "Er is een account aangemaakt voor " . $_SERVER["HTTP_HOST"] . " met de volgende gegevens: Voornaam: " . $firstname . ", Achternaam: " . $lastname . ", Email: " . $email . ", Wachtwoord: " . $password . "Verander dit wachtwoord nadat je bent ingelogd.";
-
-    $mail->send();
-  } catch (Exception $e) {
-    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-  }
+  // Send email to user
+  $to = $email;
+  $to_name = $firstname . " " . $lastname;
+  $subject = "Welkom bij " . settings($db)["name"];
+  $title = "Welkom bij " . settings($db)["name"];
+  $content = "
+    <p>
+      Hallo " . $firstname . ",<br>
+      <br>
+      Jouw account voor " . settings($db)["name"] . " is aangemaakt.<br>
+      De gegevens die bij je account behoren zijn:<br>
+      <br>
+      E-mail: " . $email . "<br>
+      Wachtwoord: " . $password . "<br>
+      Probeer je wachtwoord te wijzigen na het eerste login.<br>
+      <br>
+      <br>
+      Met vriendelijke groet,<br>
+      " . settings($db)["name"] . "
+    </p>
+  ";
+  $button_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]/login";
+  $button_text = "Inloggen";
+  email_send($db, $to, $to_name, $subject, $title, $content, $button_text, $button_link);
 }
 
 /*
@@ -299,11 +284,64 @@ function user_update($db, $user_id = null, $firstname, $lastname)
 */
 function user_remove($db, $user_id)
 {
+  admin_remove($db, $user_id);
+
   $stmt = $db->prepare("DELETE FROM users WHERE id = :id");
   $stmt->bindParam(":id", $user_id);
   $stmt->execute();
+}
 
-  admin_remove($db, $user_id);
+/* 
+  # name: user_password_send
+  # description: 
+      This function will reset the password of a user.
+  # parameters:
+      $db: The database connection.
+      $email: The email.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-26-2022 <MM-DD-YYYY>
+*/
+function user_password_send($db, $email)
+{
+  $user = user_by_email($db, $email);
+
+  if ($user) {
+    $new_password = string_random(32);
+    $hashed = string_encrypt($new_password, 1);
+
+    $stmt = $db->prepare("UPDATE users SET password = :password, salt = :salt WHERE id = :id");
+    $stmt->bindParam(":password", $hashed["string"]);
+    $stmt->bindParam(":salt", $hashed["salt"]);
+    $stmt->bindParam(":id", $user["id"]);
+    $stmt->execute();
+
+    // Send email to user
+    $to = $email;
+    $to_name = $user["firstname"] . " " . $user["lastname"];
+    $subject = "Wachtwoord reset bij " . settings($db)["name"];
+    $title = "Wachtwoord reset bij " . settings($db)["name"];
+    $content = "
+      <p>
+        Hallo " . $user["firstname"] . ",<br>
+        <br>
+        Je wachtwoord is gereset.<br>
+        <strong>Je nieuwe wachtwoord is:</strong> " . $new_password . "<br>
+
+        Pas je wachtwoord aan na de eerste keer opnieuw inloggen.<br>
+        <br>
+        <br>
+        Met vriendelijke groet,<br>
+        " . settings($db)["name"] . "
+      </p>
+    ";
+    $button_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]/profiel";
+    $button_text = "Inloggen";
+    email_send($db, $to, $to_name, $subject, $title, $content, $button_text, $button_link);
+
+    location("/login");
+  }
 }
 
 /*
@@ -367,15 +405,6 @@ function user_password_update($db,  $current_password, $new_password, $confirm_p
     return false;
   }
 
-  // Check if new password is too easy
-  if (preg_match("/^[a-zA-Z0-9]*$/", $new_password) == 0) {
-    $_SESSION["error"] = array(
-      "code" => "PASSWORD",
-      "message" => "Het nieuwe wachtwoord is te makkelijk."
-    );
-    return false;
-  }
-
   // Save new password
   if (!isset($_SESSION["error"])) {
     $salt = hash("sha256", rand(0, 999999999));
@@ -399,7 +428,7 @@ function user_password_update($db,  $current_password, $new_password, $confirm_p
   # returns:
       None
   # author: MatseVH
-  # modified: 06-25-2022 <MM-DD-YYYY>
+  # modified: 06-26-2022 <MM-DD-YYYY>
 */
 function user_login($db, $email, $password)
 {
@@ -417,7 +446,14 @@ function user_login($db, $email, $password)
       );
 
       $_SESSION["user"] = $userData;
-      location("/");
+      // Check if there is a redirect url
+      if (isset($_SESSION["redirect"])) {
+        $redirect = $_SESSION["redirect"];
+        unset($_SESSION["redirect"]);
+        location($redirect);
+      } else {
+        location("/");
+      }
       exit;
     } else {
       return array("error" => "Wachtwoord is incorrect", "status" => "401");
@@ -466,7 +502,7 @@ function admins($db)
   # returns:
       None
   # author: MatseVH
-  # modified: 06-25-2022 <MM-DD-YYYY>
+  # modified: 06-27-2022 <MM-DD-YYYY>
 */
 function admin_add($db, $user_id)
 {
@@ -476,45 +512,24 @@ function admin_add($db, $user_id)
 
   $user = user($db, $user_id);
 
-  //Create an instance; passing `true` enables exceptions
-  $mail = new PHPMailer(true);
+  // Send email to user
+  $to = $user["email"];
+  $to_name = $user["firstname"] . " " . $user["lastname"];
+  $subject = "Je bent toegevoegd als beheerder";
+  $title = "Je bent toegevoegd als beheerder";
+  $content = "
+    <p>
+      Hallo " . $user["firstname"] . ",<br>
+      Jou account op de website van " . settings($db)["name"] . " is aangepast naar een beheerders account. <br>
+      <br>
+      <br>
+      Met vriendelijke groet,<br>
+      " . settings($db)["name"] . "
+  ";
+  $button_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]/dashboard/";
+  $button_text = "Ga naar de dashboard";
 
-  try {
-    include $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
-
-    //Server settings
-    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-    $mail->isSMTP();
-    $mail->SMTPDebug = 0;
-    $mail->CharSet = "utf-8";                                      //Send using SMTP
-    $mail->Host       = $smtp_host;                     //Set the SMTP server to send through
-    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-    $mail->Username   = $smtp_user;                     //SMTP username
-    $mail->Password   = $smtp_pass;                               //SMTP password
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
-    $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
-
-    //Recipients
-    $mail->setFrom("noreply@m-vh.eu", settings($db)["name"]);
-    $mail->addAddress($user["email"], $user["firstname"] . " " . $user["lastname"]);     //Add a recipient
-
-    //Content
-    $mail->isHTML(true);                                  //Set email format to HTML
-    $mail->Subject = "Jou account op " . settings($db)["name"] . " is nu een beheerders account";
-    // Include HTML files as $mail->Body 
-    $template = file_get_contents($_SERVER["DOCUMENT_ROOT"] . "/includes/emails/admin.html");
-    $template = str_replace("{firstname}", $user["firstname"], $template);
-    $template = str_replace("{lastname}", $user["lastname"], $template);
-    $template = str_replace("{email}", $user["email"], $template);
-    $template = str_replace("{name}", settings($db)["name"], $template);
-    $template = str_replace("{url}", $_SERVER["HTTP_HOST"], $template);
-    $mail->Body = $template;
-    $mail->AltBody = "Jou account op " . settings($db)["name"] . " is nu een beheerders account, dat wilt zeggen dat jij nu de rechten hebt om de website te beheren.";
-
-    $mail->send();
-  } catch (Exception $e) {
-    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-  }
+  email_send($db, $to, $to_name, $subject, $title, $content, $button_text, $button_link);
 }
 
 /*
@@ -527,13 +542,34 @@ function admin_add($db, $user_id)
   # returns:
       None
   # author: MatseVH
-  # modified: 06-25-2022 <MM-DD-YYYY>
+  # modified: 06-26-2022 <MM-DD-YYYY>
 */
 function admin_remove($db, $user_id)
 {
   $stmt = $db->prepare("DELETE FROM admins WHERE user_id = :user_id");
   $stmt->bindParam(":user_id", $user_id);
   $stmt->execute();
+
+  $user = user($db, $user_id);
+
+  // Send email to user
+  $to = $user["email"];
+  $to_name = $user["firstname"] . " " . $user["lastname"];
+  $subject = "Je bent verwijderd als administrator";
+  $title = "Je bent verwijderd als administrator";
+  $content = "
+      <p>
+        Hallo " . $user["firstname"] . ",<br>
+        Jou account op de website van " . settings($db)["name"] . " is aangepast naar een gebruiker account. <br>
+        <br>
+        <br>
+        Met vriendelijke groet,<br>
+        " . settings($db)["name"] . "
+    ";
+  $button_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]/";
+  $button_text = "Ga naar website";
+
+  email_send($db, $to, $to_name, $subject, $title, $content, $button_text, $button_link);
 }
 
 /*
@@ -591,12 +627,12 @@ function bronnen($db)
   # returns:
       None
   # author: MatseVH
-  # modified: 06-25-2022 <MM-DD-YYYY>
+  # modified: 06-27-2022 <MM-DD-YYYY>
 */
-function bron_add($db, $name, $type, $url = "N/A")
+function bron_add($db, $content, $type, $url = "N/A")
 {
-  $stmt = $db->prepare("INSERT INTO bronnen (name, type, url) VALUES (:name, :type, :url)");
-  $stmt->bindParam(":name", $name);
+  $stmt = $db->prepare("INSERT INTO bronnen (content, type, url) VALUES (:content, :type, :url)");
+  $stmt->bindParam(":content", $content);
   $stmt->bindParam(":type", $type);
   $stmt->bindParam(":url", $url);
   $stmt->execute();
@@ -653,12 +689,12 @@ function websites($db)
   # returns:
       None
   # author: MatseVH
-  # modified: 06-25-2022 <MM-DD-YYYY>
+  # modified: 06-27-2022 <MM-DD-YYYY>
 */
-function website_add($db, $name, $url)
+function website_add($db, $content, $url)
 {
-  $stmt = $db->prepare("INSERT INTO websites (name, url) VALUES (:name, :url)");
-  $stmt->bindParam(":name", $name);
+  $stmt = $db->prepare("INSERT INTO websites (content, url) VALUES (:content, :url)");
+  $stmt->bindParam(":content", $content);
   $stmt->bindParam(":url", $url);
   $stmt->execute();
 }
@@ -714,12 +750,12 @@ function credits($db)
   # returns:
       None
   # author: MatseVH
-  # modified: 06-25-2022 <MM-DD-YYYY>
+  # modified: 06-27-2022 <MM-DD-YYYY>
 */
-function credit_add($db, $name, $url)
+function credit_add($db, $content, $url)
 {
-  $stmt = $db->prepare("INSERT INTO credits (name, url) VALUES (:name, :url)");
-  $stmt->bindParam(":name", $name);
+  $stmt = $db->prepare("INSERT INTO credits (content, url) VALUES (:content, :url)");
+  $stmt->bindParam(":content", $content);
   $stmt->bindParam(":url", $url);
   $stmt->execute();
 }
@@ -756,7 +792,7 @@ function credit_remove($db, $id)
 */
 function categories($db)
 {
-  $stmt = $db->prepare("SELECT * FROM categories");
+  $stmt = $db->prepare("SELECT * FROM category");
   $stmt->execute();
   $categories = $stmt->fetchAll();
 
@@ -777,7 +813,7 @@ function categories($db)
 */
 function category_get_by_id($db, $id)
 {
-  $stmt = $db->prepare("SELECT * FROM categories WHERE id = :id");
+  $stmt = $db->prepare("SELECT * FROM category WHERE id = :id");
   $stmt->bindParam(":id", $id);
   $stmt->execute();
   $category = $stmt->fetch();
@@ -803,12 +839,65 @@ function category_add($db, $title, $question, $image)
 {
   $slug = str_replace(" ", "-", $title);
   $slug = strtolower($slug);
-  $stmt = $db->prepare("INSERT INTO categories (title, question, slug, image) VALUES (:title, :question, :slug, :image)");
+  $stmt = $db->prepare("INSERT INTO category (title, question, slug, image) VALUES (:title, :question, :slug, :image)");
   $stmt->bindParam(":title", $title);
   $stmt->bindParam(":question", $question);
   $stmt->bindParam(":slug", $slug);
   $stmt->bindParam(":image", $image);
   $stmt->execute();
+
+  // Close popup
+  echo '<script>window.close();</script>';
+}
+
+/*
+  # name: category_remove
+  # description: 
+      This function will remove a category.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the category.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function category_remove($db, $id)
+{
+  $stmt = $db->prepare("DELETE FROM category WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+}
+
+/*
+  # name: category_edit
+  # description: 
+      This function will update a category.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the category.
+      $title: The title of the category.
+      $question: The question of the category.
+      $image: The image of the category.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function category_edit($db, $id, $title, $question, $image)
+{
+  $slug = str_replace(" ", "-", $title);
+  $slug = strtolower($slug);
+  $stmt = $db->prepare("UPDATE category SET title = :title, question = :question, slug = :slug, image = :image WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->bindParam(":title", $title);
+  $stmt->bindParam(":question", $question);
+  $stmt->bindParam(":slug", $slug);
+  $stmt->bindParam(":image", $image);
+  $stmt->execute();
+
+  // Close popup
+  echo '<script>window.close();</script>';
 }
 
 /*
@@ -817,16 +906,16 @@ function category_add($db, $title, $question, $image)
       This function will return all subcategories.
   # parameters:
       $db: The database connection.
-      $category_id: The id of the category.
+      optional $category_id: The id of the category.
   # returns:
       An array of subcategories.
   # author: MatseVH
   # modified: 06-25-2022 <MM-DD-YYYY>
 */
-function subcategories($db, $category_id)
+function subcategories($db, $category_id = "null")
 {
-  $stmt = $db->prepare("SELECT * FROM subcategories WHERE category_id = :category_id");
-  $stmt->bindParam(":category_id", $category_id);
+  if ($category_id == "null") $stmt = $db->prepare("SELECT * FROM subcategory");
+  else $stmt = $db->prepare("SELECT * FROM subcategory WHERE category = $category_id");
   $stmt->execute();
   $subcategories = $stmt->fetchAll();
 
@@ -847,7 +936,7 @@ function subcategories($db, $category_id)
 */
 function subcategory($db, $id)
 {
-  $stmt = $db->prepare("SELECT * FROM subcategories WHERE id = :id");
+  $stmt = $db->prepare("SELECT * FROM subcategory WHERE id = :id");
   $stmt->bindParam(":id", $id);
   $stmt->execute();
   $subcategory = $stmt->fetch();
@@ -856,25 +945,201 @@ function subcategory($db, $id)
 }
 
 /*
+  # name: subcategory_add
+  # description: 
+      This function will add a subcategory.
+  # parameters:
+      $db: The database connection.
+      $title: The title of the subcategory.
+      $category_id: The question of the subcategory.
+      $description: The description of the subcategory.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function subcategory_add($db, $title, $category_id, $description)
+{
+  $slug = str_replace(" ", "-", $title);
+  $slug = strtolower($slug);
+  $stmt = $db->prepare("INSERT INTO subcategory (title, category, slug, description) VALUES (:title, :category_id, :slug, :description)");
+  $stmt->bindParam(":title", $title);
+  $stmt->bindParam(":category_id", $category_id);
+  $stmt->bindParam(":slug", $slug);
+  $stmt->bindParam(":description", $description);
+  $stmt->execute();
+
+  // Close popup
+  echo '<script>window.close();</script>';
+}
+
+/*
+  # name: subcategory_remove
+  # description: 
+      This function will remove a subcategory.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the subcategory.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function subcategory_remove($db, $id)
+{
+  $stmt = $db->prepare("DELETE FROM subcategory WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+}
+
+/*
+  # name: subcategory_edit
+  # description: 
+      This function will update a subcategory.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the subcategory.
+      $title: The title of the subcategory.
+      $category_id: The question of the subcategory.
+      $description: The description of the subcategory.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function subcategory_edit($db, $id, $title, $category_id, $description)
+{
+  $slug = str_replace(" ", "-", $title);
+  $slug = strtolower($slug);
+  $stmt = $db->prepare("UPDATE subcategory SET title = :title, category = :category_id, slug = :slug, description = :description WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->bindParam(":title", $title);
+  $stmt->bindParam(":category_id", $category_id);
+  $stmt->bindParam(":slug", $slug);
+  $stmt->bindParam(":description", $description);
+  $stmt->execute();
+
+  // Close popup
+  echo '<script>window.close();</script>';
+}
+
+
+/*
   # name: tips
   # description: 
       This function will return all tips. 
   # parameters:
       $db: The database connection.
-      $subcategory_id: The id of the subcategory.
+      optional $subcategory_id: The id of the subcategory.
   # returns:
       An array of tips.
   # author: MatseVH
   # modified: 06-25-2022 <MM-DD-YYYY>
 */
-function tips($db, $subcategory_id)
+function tips($db, $subcategory_id = "null")
 {
-  $stmt = $db->prepare("SELECT * FROM tips WHERE subcategory_id = :subcategory_id");
-  $stmt->bindParam(":subcategory_id", $subcategory_id);
+  if ($subcategory_id == "null") $stmt = $db->prepare("SELECT * FROM tips");
+  else $stmt = $db->prepare("SELECT * FROM tips WHERE subcategory = $subcategory_id");
   $stmt->execute();
   $tips = $stmt->fetchAll();
 
   return $tips;
+}
+
+/*
+  # name: tip
+  # description: 
+      This function will return a tip.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the tip.
+  # returns:
+      A tip.
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function tip($db, $id)
+{
+  $stmt = $db->prepare("SELECT * FROM tips WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+  $tip = $stmt->fetch();
+
+  return $tip;
+}
+
+/*
+  # name: tip_add
+  # description: 
+      This function will add a tip.
+  # parameters:
+      $db: The database connection.
+      $title: The title of the tip.
+      $subcategory_id: The subcategory of the tip.
+      $content: The content of the tip.
+      $imgage: The image of the tip.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function tip_add($db, $subcategory_id, $content, $image)
+{
+  $stmt = $db->prepare("INSERT INTO tips (subcategory, content, image) VALUES (:subcategory_id, :content, :image)");
+  $stmt->bindParam(":subcategory_id", $subcategory_id);
+  $stmt->bindParam(":content", $content);
+  $stmt->bindParam(":image", $image);
+  $stmt->execute();
+
+  // Close popup
+  echo '<script>window.close();</script>';
+}
+
+/*
+  # name: tip_remove
+  # description: 
+      This function will remove a tip.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the tip.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function tip_remove($db, $id)
+{
+  $stmt = $db->prepare("DELETE FROM tips WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->execute();
+}
+
+/*
+  # name: tip_edit
+  # description: 
+      This function will update a tip.
+  # parameters:
+      $db: The database connection.
+      $id: The id of the tip.
+      $title: The title of the tip.
+      $subcategory_id: The subcategory of the tip.
+      $content: The content of the tip.
+      $imgage: The image of the tip.
+  # returns:
+      None
+  # author: MatseVH
+  # modified: 06-25-2022 <MM-DD-YYYY>
+*/
+function tip_edit($db, $id, $subcategory_id, $content)
+{
+  $stmt = $db->prepare("UPDATE tips SET subcategory = :subcategory_id, content = :content WHERE id = :id");
+  $stmt->bindParam(":id", $id);
+  $stmt->bindParam(":subcategory_id", $subcategory_id);
+  $stmt->bindParam(":content", $content);
+  $stmt->execute();
+
+  // Close popup
+  echo '<script>window.close();</script>';
 }
 
 /*
@@ -1046,7 +1311,7 @@ function results($db, $user_id)
 */
 function result_save($db, $user_id, $result)
 {
-  $stmt = $db->prepare("INSERT INTO results (user_id, result) VALUES (:user_id, :result)");
+  $stmt = $db->prepare("INSERT INTO results (user_id, results) VALUES (:user_id, :result)");
   $stmt->bindParam(":user_id", $user_id);
   $stmt->bindParam(":result", $result);
   $stmt->execute();
@@ -1098,9 +1363,9 @@ function result_get($db, $id)
 */
 function settings($db)
 {
-  $stmt = $db->prepare("SELECT * FROM settings");
+  $stmt = $db->prepare("SELECT * FROM settings LIMIT 1");
   $stmt->execute();
-  $settings = $stmt->fetchAll();
+  $settings = $stmt->fetch();
 
   return $settings;
 }
@@ -1195,9 +1460,9 @@ function homepage_update($db, $home_title, $home_subtitle, $home_howitworks_one_
 */
 function texts($db)
 {
-  $stmt = $db->prepare("SELECT * FROM tekst");
+  $stmt = $db->prepare("SELECT * FROM tekst LIMIT 1");
   $stmt->execute();
-  $texts = $stmt->fetchAll();
+  $texts = $stmt->fetch();
 
   return $texts;
 }
@@ -1342,7 +1607,7 @@ function format($timestamp)
   # returns:
       An array of stats.
   # author: MatseVH
-  # modified: 06-25-2022 <MM-DD-YYYY>
+  # modified: 06-26-2022 <MM-DD-YYYY>
 */
 function stats($db)
 {
@@ -1363,6 +1628,11 @@ function stats($db)
   $stmt = $db->prepare("SELECT COUNT(*) FROM category");
   $stmt->execute();
   $arr["categories"] = $stmt->fetchColumn();
+
+  // Count all subcategories
+  $stmt = $db->prepare("SELECT COUNT(*) FROM subcategory");
+  $stmt->execute();
+  $arr["subcategories"] = $stmt->fetchColumn();
 
   // Count all tips
   $stmt = $db->prepare("SELECT COUNT(*) FROM tips");
@@ -1391,4 +1661,68 @@ function stats($db)
 
   // Return the array
   return $arr;
+}
+
+/*
+  # name: email_send
+  # description: 
+      This function will send an email.
+  # parameters:
+      $to: The email address of the recipient.
+      $to_name: The name of the recipient.
+      $subject: The subject of the email.
+      $title: The title of the email.
+      $content: The content of the email.
+      $button_text: The text of the button.
+      $button_link: The link of the button.
+  # returns:
+      A boolean.
+  # author: MatseVH
+  # modified: 06-26-2022 <MM-DD-YYYY>
+*/
+function email_send($db, $to, $to_name, $subject, $title, $content, $button_text, $button_link)
+{
+  //Create an instance; passing `true` enables exceptions
+  $mail = new PHPMailer(true);
+
+  try {
+    include $_SERVER["DOCUMENT_ROOT"] . "/includes/config.dist.php";
+
+    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+    $mail->isSMTP();
+    $mail->SMTPDebug = 0;
+    $mail->CharSet = "utf-8";                                      //Send using SMTP
+    $mail->Host       = $smtp_host;                     //Set the SMTP server to send through
+    $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+    $mail->Username   = $smtp_user;                     //SMTP username
+    $mail->Password   = $smtp_pass;                               //SMTP password
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
+    $mail->Port       = 587;                                //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+    //Recipients
+    $mail->setFrom("noreply@m-vh.eu", settings($db)["name"]);
+    $mail->addAddress($to, $to_name);     //Add a recipient
+
+    //Content
+    $mail->isHTML(true);                                  //Set email format to HTML
+    $mail->Subject = $subject;
+
+    // Include HTML file as $mail->Body 
+    $template = file_get_contents($_SERVER["DOCUMENT_ROOT"] . "/includes/emails/template.php");
+    // Replace the placeholders with the actual data
+    $template = str_replace("{url}", $_SERVER["HTTP_HOST"], $template);
+    $template = str_replace("{title}", $title, $template);
+    $template = str_replace("{content}", $content, $template);
+    $template = str_replace("{button_text}", $button_text, $template);
+    $template = str_replace("{button_link}", $button_link, $template);
+
+    // Set the message body to the HTML message template we just loaded
+    $mail->Body = $template;
+    $mail->AltBody = strip_tags($content);
+
+    // Send the message
+    $mail->send();
+  } catch (Exception $e) {
+    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+  }
 }

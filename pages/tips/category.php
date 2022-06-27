@@ -5,6 +5,21 @@ if (!isset($_GET["id"])) print "<script>window.close();</script>";
 $category = category_get_by_id($db, $_GET["id"]);
 ?>
 
+<style>
+  ul {
+    list-style-type: inside !important;
+    list-style: inside !important;
+    list-style-position: inside !important;
+  }
+
+  li {
+    list-style-type: inside !important;
+    list-style: inside !important;
+    list-style-position: inside !important;
+  }
+</style>
+
+
 <div class="flex h-screen">
   <div class="w-full h-full overflow-y-auto">
     <div class="w-full overflow-hidden rounded-lg shadow-xs">
@@ -22,7 +37,7 @@ $category = category_get_by_id($db, $_GET["id"]);
           <div class="relative sm:pb-12 mt-10">
             <div class="space-y-16">
               <?php
-              foreach (subcategory_get_by_id($db, $_GET["id"]) as $subcategory) {
+              foreach (subcategories($db, $_GET["id"]) as $subcategory) {
               ?>
                 <article class="relative">
                   <div class="relative">
@@ -30,10 +45,13 @@ $category = category_get_by_id($db, $_GET["id"]);
                     <div class="mt-2 mb-4 prose prose-slate prose-a:relative prose-a:z-10 dark:prose-dark line-clamp-2">
                       <p><?php print $subcategory["description"] ?></p>
                     </div>
-                  </div><a class="flex items-center text-sm text-sky-500 font-medium" href="/pages/tips/subcategory.php?id=<?php print $subcategory["id"] ?>"><span class="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-2xl"></span>
-                    <span class="relative">Meer weten</span>
-                    <i class="fa-solid fa-chevron-right text-sm relative mt-px overflow-visible ml-2.5 text-sky-300 dark:text-sky-700"></i>
-                  </a>
+                  </div>
+                  <?php if (count(tips($db, $subcategory["id"])) > 0) { ?>
+                    <a class="flex items-center text-sm text-sky-500 font-medium" href="/pages/tips/subcategory.php?id=<?php print $subcategory["id"] ?>"><span class="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-2xl"></span>
+                      <span class="relative">Meer weten</span>
+                      <i class="fa-solid fa-chevron-right text-sm relative mt-px overflow-visible ml-2.5 text-sky-300 dark:text-sky-700"></i>
+                    </a>
+                  <?php } ?>
                 </article>
               <?php
               }

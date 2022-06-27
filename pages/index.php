@@ -128,6 +128,5 @@
     <hr class="w-full bg-black" />
 
   </section>
-  <script src="/assets/js/script.js"></script>
 
   <?php include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/_footer.php"; ?>

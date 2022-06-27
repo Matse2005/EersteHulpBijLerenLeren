@@ -2,7 +2,7 @@
 
 <?php
 if (isset($_POST["create"])) {
-  user_create($db, $_POST["firstname"], $_POST["lastname"], $_POST["email"], $_POST["password"]);
+  user_create($db, $_POST["firstname"], $_POST["lastname"], $_POST["email"]);
 } else if (isset($_POST["remove"])) {
   user_remove($db, $_POST["remove"]);
 }
@@ -121,17 +121,6 @@ if (isset($_POST["create"])) {
                     <input id="email" name="email" type="email" onchange="validate()" oninvalid="validate()" class="form-input block w-full transition duration-150 drop-shadow-xl ease-in-out sm:text-sm sm:leading-5 p-2 rounded" required />
                   </div>
                   <small id="emailErr" class="text-red-500 hidden"></small>
-                </div>
-                <div class="">
-                  <label for="password" class="block text-sm font-medium leading-5 text-black">
-                    Wachtwoord
-                  </label>
-                  <div class="mt-1 rounded-md shadow-sm">
-                    <input id="password" name="password" class="form-input block w-full transition duration-150 drop-shadow-xl ease-in-out sm:text-sm sm:leading-5 p-2 rounded" required />
-                  </div>
-                  <small>
-                    Maak een makkelijk te onthouden wachtwoord aan, er zal een e-mail naar de gebruiker gestuurd worden met daarin een link om het wachtwoord te resetten.
-                  </small>
                 </div>
               </div>
             </div>

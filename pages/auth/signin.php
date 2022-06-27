@@ -1,6 +1,8 @@
 <?php include_once $_SERVER["DOCUMENT_ROOT"] . "/includes/_header.php"; ?>
 
 <?php
+
+
 if (isset($_POST["submit"])) {
   $email = $_POST["email"];
   $password = $_POST["password"];
@@ -12,7 +14,8 @@ if (isset($_POST["submit"])) {
   <div hidden class="fixed inset-0 w-7/12 lg:block">
     <img class="w-full h-full object-cover" src="/assets/img/signin.webp" alt="Sign in screen image">
   </div>
-  <div hidden role="hidden" class="fixed inset-0 w-6/12 ml-auto bg-secondary bg-opacity-100 backdrop-blur-3xl lg:block"></div>
+  <div class="fixed hidden inset-0 w-6/12 ml-auto bg-secondary bg-opacity-100 backdrop-blur-3xl lg:block">
+  </div>
   <div class="relative h-full ml-auto lg:w-6/12">
     <div class="m-auto py-12 px-6 sm:p-20 xl:w-10/12">
       <div class="space-y-4">
@@ -21,10 +24,12 @@ if (isset($_POST["submit"])) {
 
       <div class="mt-12">
         <button class="py-3 px-6 w-full rounded-xl bg-orange-100 hover:bg-orange-200 focus:bg-orange-100 active:bg-orange-200">
-          <div class="flex gap-3 justify-center">
-            <object type="image/svg+xml" data="/assets/img/smartschool.svg" class="w-5" aria-label="Smartschool Logo">
-              Smartschool App Logo
-            </object>
+          <div class="flex justify-center">
+            <div class="w-5 mr-2">
+              <object type="image/svg+xml" data="/assets/img/smartschool.svg" class="w-full" aria-label="Smartschool Logo">
+                Smartschool App Logo
+              </object>
+            </div>
             <span class="block w-max font-medium tracking-wide text-sm text-orange-700">met Smartschool</span>
           </div>
         </button>
@@ -45,10 +50,10 @@ if (isset($_POST["submit"])) {
         </div>
 
         <div class="flex flex-col items-end">
-          <input required type="password" name="password" placeholder="Wat is jou geheime woord?" class="w-full py-3 px-6 ring-1 ring-gray-300 rounded-xl placeholder-gray-600 bg-transparent transition disabled:ring-gray-200 disabled:bg-gray-100 disabled:placeholder-gray-400 invalid:ring-red-400 focus:invalid:outline-none">
-          <button type="reset" class="w-max p-3 -mr-3">
+          <input required type="password" name="password" placeholder="Wat is jouw wachtwoord?" class="w-full py-3 px-6 ring-1 ring-gray-300 rounded-xl placeholder-gray-600 bg-transparent transition disabled:ring-gray-200 disabled:bg-gray-100 disabled:placeholder-gray-400 invalid:ring-red-400 focus:invalid:outline-none">
+          <a href="/wachtwoord_vergeten" class="w-max p-3 -mr-3">
             <span class="text-sm tracking-wide text-black">Wachtwoord vergeten?</span>
-          </button>
+          </a>
         </div>
 
         <div>

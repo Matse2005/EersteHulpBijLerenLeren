@@ -50,7 +50,7 @@
         <template x-if="isPagesMenuOpen">
           <ul x-transition:enter="transition-all ease-in-out duration-300" x-transition:enter-start="opacity-25 max-h-0" x-transition:enter-end="opacity-100 max-h-xl" x-transition:leave="transition-all ease-in-out duration-300" x-transition:leave-start="opacity-100 max-h-xl" x-transition:leave-end="opacity-0 max-h-0" class="p-2 mt-2 space-y-2 overflow-hidden text-sm font-medium text-gray-500 rounded-md shadow-inner bg-gray-50 dark:text-gray-400 dark:bg-gray-900" aria-label="submenu">
             <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
-              <a class="w-full" href="/pages/dashboard/tips/categorieen.php">Categroieën</a>
+              <a class="w-full" href="/pages/dashboard/tips/categorieen.php">Categorieën</a>
             </li>
             <li class="px-2 py-1 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200">
               <a class="w-full" href="/pages/dashboard/tips/subcategorieen.php">
@@ -172,7 +172,7 @@
       <li class="relative px-6 py-3">
         <span class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg" aria-hidden="true"></span>
         <a class="inline-flex items-center w-full text-sm font-source-code-pro" href="/pages/dashboard/articles/index.php">
-          <i class="fa-regular fa-user-gear text-lg"></i>
+          <i class="fa-regular fa-newspaper text-lg"></i>
           <span class="ml-4">Artikels</span>
         </a>
       </li>
@@ -207,27 +207,32 @@
       <li class="relative px-6 py-3 font-semibold">Website</li>
       <li class="relative px-6 py-3">
         <a class="inline-flex items-center w-full text-sm font-source-code-pro" href="/">
+          <i class="fa-regular fa-home text-lg"></i>
           <span class="ml-4">Start</span>
         </a>
       </li>
       <li class="relative px-6 py-3">
         <a class="inline-flex items-center w-full text-sm font-source-code-pro" href="/tips">
+          <i class="fa-regular fa-lightbulb text-lg"></i>
           <span class="ml-4">Tips</span>
         </a>
       </li>
       <li class="relative px-6 py-3">
         <a class="inline-flex items-center w-full text-sm font-source-code-pro" href="/artikels">
+          <i class="fa-regular fa-newspaper text-lg"></i>
           <span class="ml-4">Artikels</span>
         </a>
       </li>
       <li class="relative px-6 py-3">
         <a class="inline-flex items-center w-full text-sm font-source-code-pro" href="/hulp">
+          <i class="fa-regular fa-square-poll-vertical text-lg"></i>
           <span class="ml-4">Mijn Hulp</span>
         </a>
       </li>
       <li class="relative px-6 py-3">
         <a class="inline-flex items-center w-full text-sm font-source-code-pro" href="/profiel">
-          <span class="ml-4"><?php print $_SESSION["user"]["firstname"] ?> <?php print $_SESSION["user"]["lastname"] ?></span>
+          <i class="fa-regular fa-user text-lg"></i>
+          <span class="ml-4">Profiel</span>
         </a>
       </li>
     </ul>
@@ -269,9 +274,7 @@
             </a>
           </li>
           <li class="mx-3">
-            <a class="text-black growing-underline" href="/profiel">
-              <?php print $_SESSION["user"]["firstname"] ?> <?php print $_SESSION["user"]["lastname"] ?>
-            </a>
+            <a class="text-black growing-underline" href="/profiel">Profiel</a>
           </li>
         </ul>
       </div>

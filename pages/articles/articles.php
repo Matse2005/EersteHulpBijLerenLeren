@@ -30,7 +30,7 @@ $texts = texts($db);
                 <dt class="sr-only">Datum</dt>
                 <dd class="whitespace-nowrap text-sm leading-6 dark:text-slate-400"><time dateTime="2022-02-24T12:00:00.000Z"><?php print format($article["created_at"]) ?></time></dd>
               </dl>
-            </div><a class="flex items-center text-sm text-sky-500 font-medium" href="/articles/<?php print $article["slug"] ?>"><span class="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-2xl"></span><span class="relative">Lees meer<span class="sr-only">,
+            </div><a class="flex items-center text-sm text-sky-500 font-medium" href="/artikel/<?php print $article["slug"] ?>"><span class="absolute -inset-y-2.5 -inset-x-4 md:-inset-y-4 md:-inset-x-6 sm:rounded-2xl"></span><span class="relative">Lees meer<span class="sr-only">,
                   <!-- --><?php print $article["title"] ?>
                 </span></span><svg class="relative mt-px overflow-visible ml-2.5 text-sky-300 dark:text-sky-700" width="3" height="6" viewBox="0 0 3 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M0 0L3 3L0 6"></path>

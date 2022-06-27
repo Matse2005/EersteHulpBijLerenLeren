@@ -81,7 +81,7 @@ if (!$result) {
                     <div class="h-48 lg:h-auto lg:w-48 flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden">
                       <object class="h-full lg:h-auto lg:w-full flex-none bg-cover rounded-t lg:rounded-t-none lg:rounded-l text-center overflow-hidden" data="/assets/img/<?php print image($category["image"])["image"] ?>"></object>
                     </div>
-                    <div class="rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+                    <div class="rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal w-full">
                       <div class="mb-8">
                         <p class="text-sm flex items-center">
                           <span class="ml-1">
@@ -100,7 +100,7 @@ if (!$result) {
                         </p>
                         <div class="font-bold text-xl mb-2"><?php print $category["title"] ?></div>
                       </div>
-                      <div class="flex items-center aangeraden">
+                      <div class="flex items-center w-full">
                         <button onclick="window.open('/pages/tips/category.php?id=<?php print $category['id'] ?>','name','width=800,height=800')" class="w-full bg-black text-white px-4 py-2 text-center rounded-lg">
                           Bekijk tips
                         </button>
